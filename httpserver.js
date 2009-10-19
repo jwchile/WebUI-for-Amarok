@@ -17,7 +17,7 @@ function HTTPServer(){
     if(!this.isListening()){
         Amarok.alert("Unable to open a port for the web server.");
     }
-    Amarok.alert("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
+     Amarok.Window.Statusbar.longMessage("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
     this.newConnection.connect(this, this.newConnectionCallback);
     this.requestHandlerRegistry = new Object();
 }
@@ -36,6 +36,7 @@ HTTPServer.prototype.newConnectionCallback = function(){
             if( endOfRequest > 0 ){
                 try{
                     var header = new QHttpRequestHeader(request.left(endOfRequest + 4).toString());
+                    request.clear();
                     Amarok.debug("Path: "+header.path());
                     thisHTTP.handleRequest(socket, header.path());
                 }catch( error ){
@@ -46,29 +47,53 @@ HTTPServer.prototype.newConnectionCallback = function(){
     );
 }
 
+HTTPServer.prototype.setDefaultHandler = function(func){
+    this.defaultHandler = func;
+}
+
 HTTPServer.prototype.registerHandler = function(path, func){
     this.requestHandlerRegistry[path] = func;
 }
 
 HTTPServer.prototype.getRequestHandler = function(path){
-    Amarok.debug("Req-Path: "+path);
     for(var registeredPath in this.requestHandlerRegistry){
-        if(path.indexOf(registeredPath)==0)
+        Amarok.debug("registeredPath "+registeredPath+" "+path);
+        if(path.indexOf(registeredPath)==0){
+            Amarok.debug("hit!");
             return this.requestHandlerRegistry[registeredPath];
+        }
     }
-    return null;
+    return this.defaultHandler;
 }
 
 HTTPServer.prototype.handleRequest = function(socket, path){
     handler = this.getRequestHandler(path);
-    content = Amarok.Engine.currentTrack().artist+" "+Amarok.Engine.currentTrack().title+"</br>"
-    response = new QByteArray();
-    response.append("HTTP/1.1 200\n");
-    response.append("Content-Type: text/html\n");
-    response.append("Content-Length: "+content.length+"\n");
-    response.append("Server: Amarok WebUI\n\r\n");
-    //response.append("This is a test!</br>");
-    //response.append(Amarok.Info.scriptPath()+"</br>");
-    response.append(content);
-    socket.write(response);
+    if (handler != null){
+        responseContent = handler(path);
+        retCode = 200;
+        reasonPhrase = "OK";
+        if (responseContent["retCode"]){
+            retCode = responseContent.retCode;
+            reasonPhrase = responseContent.reasonPhrase;
+        }
+        responseHeader = new QHttpResponseHeader(retCode, reasonPhrase, 1, 1);
+        responseHeader.setContentLength(responseContent.data.length());
+        responseHeader.setValue("Content-Type", responseContent.mimeType);
+        response = new QByteArray();
+        response.append(responseHeader.toString());
+        //response.append("\r\n");
+        response.append(responseContent.data);
+        socket.write(response);
+     }else{
+        responseContent = new QByteArray();
+        responseContent.append("<h3>404 Error</h3>Invalid request!");
+        responseHeader = new QHttpResponseHeader(404, "Not Found", 1, 1);
+        responseHeader.setContentLength(responseContent.length());
+        responseHeader.setValue("Content-Type", "text/html");
+        response = new QByteArray();
+        response.append(responseHeader.toString());
+        //response.append("\r\n");
+        response.append(responseContent);
+        socket.write(response);
+     }
 }
