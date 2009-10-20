@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Amarok WebUI</title>
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+  <style type="text/css" media="screen">@import "/iui/iui.css";</style>
+  <script type="application/x-javascript" src="/iui/iui.js"></script>
+  <script type="text/javascript">
+    iui.animOn = true;
+    function fillDiv(url, target) {
+        document.getElementById(target).innerHTML = ' Fetching data...';
+        if (window.XMLHttpRequest) {
+            req = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        if (req != undefined) {
+            req.onreadystatechange = function(){
+                if (req.readyState == 4) { // only if req is "loaded"
+                    if (req.status == 200) { // only if "OK"
+                        document.getElementById(target).innerHTML = req.responseText;
+                    } else {
+                        document.getElementById(target).innerHTML=" Error:\n"+ req.status + "\n" +req.statusText;
+                    }
+                }
+            }
+            req.open("GET", url, true);
+            req.send("");
+        }
+    }
+  </script>
+</head>
+
+<body>
+    <div class="toolbar">
+        <h1 id="pageTitle"></h1>
+        <a id="backButton" class="button" href="#"></a>
+    </div>
+    <ul id="home" title="Amarok WebUI" selected="true">
+       <li><a href="/ajax/currentTrackDiv">Current Track</a></li>
+       <li><a href="/ajax/playlistDiv">Playlist</a></li>
+       <li><a href="/ajax/collectionDiv">Collection</a></li>
+       <li><a href=/ajax/controlDiv">Control</a></li>
+    </ul>
+</body>
+
+</html>

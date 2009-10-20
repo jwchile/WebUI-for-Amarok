@@ -63,19 +63,27 @@ currentTrackCover = function(path){
 currentTrackDiv = function(path){
     response = new Object();
     response.data = new QByteArray();
-    response.data.append('<h2>Current Track</h2>\
+    response.data.append('<div id="currentTrack" title="Current Track" class="panel"/>\
+    <h2>Current Track</h2>\
     <fieldset>\
         <div class="row">\
-            <img src="/ajax/currentTrackCover" width="180" align="center"/>\
-        </div>\
-        <div class="row">\
-            <label>Artist</label>');
+            <label>Artist</label>\
+            <span>');
     response.data.append(Amarok.Engine.currentTrack().artist);
-    response.data.append('</div>\
+    response.data.append('</span></div>\
         <div class="row">\
-            <label>Title</label>');
+            <label>Title</label>\
+            <span>');
     response.data.append(Amarok.Engine.currentTrack().title);
-    response.data.append('</div></fieldset>');
+    response.data.append('</span></div>\
+        <div class="row">\
+            <label>Album</label>\
+            <span>');
+    response.data.append(Amarok.Engine.currentTrack().album);
+    response.data.append('</span></div>\
+    </fieldset>\
+    <img src="/ajax/currentTrackCover"/>\
+    </div>');
     response.mimeType = "text/html";
     return response;
 }
