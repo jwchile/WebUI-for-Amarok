@@ -1,30 +1,7 @@
 Importer.loadQtBinding("qt.core");
 Importer.loadQtBinding("qt.network");
+Importer.loadQtBinding("qt.gui");
 Importer.include("httpserver.js");
-
-mainHandler = function(path){
-    response = new Object();
-    response.data = new QByteArray();
-    response.data.append('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\
-<html xmlns="http://www.w3.org/1999/xhtml">\
-<head>\
-  <title>Amarok WebUI</title>\
-  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>\
-  <style type="text/css" media="screen">@import "/iui/iui.css";</style>\
-  <script type="application/x-javascript" src="/iui/iui.js"></script>\
-</head>\
-<body>\
-    <div class="toolbar">\
-        <h1 id="pageTitle"></h1>\
-        <a id="backButton" class="button" href="#"></a>\
-    </div>\
-    <div id="home" title="Amarok WebUI" selected="true">\
-    </div>\
-</body>\
-</html>');
-    response.mimeType = "text/html";
-    return response;
-}
 
 fileHandler = function(path){
     response = new Object();
@@ -72,10 +49,38 @@ fileHandler = function(path){
     return response;
 }
 
-ajaxHandler = function(path){
-    
+currentTrackCover = function(path){
+    response = new Object();
+    response.data = new QByteArray();
+    buffer = new QBuffer(response.data);
+    buffer.open(QIODevice.WriteOnly);
+    Amarok.Engine.currentTrack().imagePixmap().save(buffer, "PNG");
+    buffer.close();
+    response.mimeType = "image/png";
+    return response;
+}
+
+currentTrackDiv = function(path){
+    response = new Object();
+    response.data = new QByteArray();
+    response.data.append('<h2>Current Track</h2>\
+    <fieldset>\
+        <div class="row">\
+            <img src="/ajax/currentTrackCover" width="180" align="center"/>\
+        </div>\
+        <div class="row">\
+            <label>Artist</label>');
+    response.data.append(Amarok.Engine.currentTrack().artist);
+    response.data.append('</div>\
+        <div class="row">\
+            <label>Title</label>');
+    response.data.append(Amarok.Engine.currentTrack().title);
+    response.data.append('</div></fieldset>');
+    response.mimeType = "text/html";
+    return response;
 }
 
 http = new HTTPServer();
 http.setDefaultHandler(fileHandler);
-http.registerHandler("/ajax", ajaxHandler);
+http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
+http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
