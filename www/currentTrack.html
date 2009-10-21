@@ -1,0 +1,32 @@
+<div id="currentTrack" title="Current Track" class="panel"/>
+    <h2>Current Track</h2>
+    <fieldset>
+        <div class="row">
+            <label>Artist</label>
+            <span>###artist###</span></div>
+        <div class="row">
+            <label>Title</label>
+            <span>###title###</span>
+        </div>
+        <div class="row">
+            <label>Album</label>
+            <span>###album###</span>
+        </div>
+        <div class="row">
+            <label>Length</label>
+            <span>###minutes###:###seconds###</span>
+        </div>
+    </fieldset>
+    <div style="text-align:center">
+            <div class="inlineGrayButton" onClick="prevTrack();setTimeout(reloadCurrentTrack, 1000);">&lt;</div>
+            <div class="inlineGrayButton" onClick="playPause();setTimeout(reloadCurrentTrack, 1000);">###playpause###</div>
+            <div class="inlineGrayButton" onClick="nextTrack();setTimeout(reloadCurrentTrack, 1000);">&nbsp;&gt;&nbsp;</div>
+    </div>
+
+    <div style="text-align:center"> 
+            <div class="inlineGrayButton" onClick="astop();">Stop</div>
+            <div class="inlineGrayButton" onClick="reloadCurrentTrack();">Reload</div>
+    </div>
+    <p/>
+    <img src="/ajax/currentTrackCover"/>
+</div>
