@@ -45,9 +45,19 @@
         req.open("GET", "/ajax/playPause", true);
         req.send("");
     }
-    function astop(){
+    function stop(){
         req = new XMLHttpRequest();
         req.open("GET", "/ajax/stop", true);
+        req.send("");
+    }
+    function incVolume(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/incVolume", true);
+        req.send("");
+    }
+    function decVolume(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/decVolume", true);
         req.send("");
     }
     function reloadCurrentTrack(){

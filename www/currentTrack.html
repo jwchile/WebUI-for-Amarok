@@ -1,4 +1,4 @@
-<div id="currentTrack" title="Current Track" class="panel"/>
+<div id="currentTrack" title="Current Track" class="panel">
     <fieldset>
         <div class="row">
             <label>Artist</label>
@@ -17,14 +17,18 @@
         </div>
     </fieldset>
     <div style="text-align:center">
-            <div class="inlineGrayButton" onClick="prevTrack();setTimeout(reloadCurrentTrack, 1000);">&lt;</div>
-            <div class="inlineGrayButton" onClick="playPause();setTimeout(reloadCurrentTrack, 1000);">###playpause###</div>
-            <div class="inlineGrayButton" onClick="nextTrack();setTimeout(reloadCurrentTrack, 1000);">&nbsp;&gt;&nbsp;</div>
+        <div class="inlineGrayButton" onClick="prevTrack();setTimeout(reloadCurrentTrack, 1000);">&lt;</div>
+        <div class="inlineGrayButton" onClick="playPause();setTimeout(reloadCurrentTrack, 1000);">###playpause###</div>
+        <div class="inlineGrayButton" onClick="nextTrack();setTimeout(reloadCurrentTrack, 1000);">&gt;</div>
     </div>
 
-    <div style="text-align:center"> 
-            <div class="inlineGrayButton" onClick="astop();">Stop</div>
-            <div class="inlineGrayButton" onClick="reloadCurrentTrack();">Reload</div>
+    <div style="text-align:center">
+        <div class="inlineGrayButton" onClick="decVolume();">-</div>
+        <div class="inlineGrayButton" onClick="stop();">Stop</div>
+        <div class="inlineGrayButton" onClick="incVolume();">+</div>
+    </div>
+    <div style="text-align:center">
+        <div class="inlineGrayButton" onClick="reloadCurrentTrack();">Reload</div>
     </div>
     <img src="/ajax/currentTrackCover?key=###key###"/>
 </div>

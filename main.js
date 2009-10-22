@@ -3,7 +3,13 @@ Importer.loadQtBinding("qt.network");
 Importer.loadQtBinding("qt.gui");
 Importer.include("httpserver.js");
 Importer.include("util.js");
+Importer.include("conf.js");
 
+/*
+ * Serve a file from the <scriptPath>/www folder.
+ * If path is pointing to a parent directory a 403 is sent.
+ * For some file types the corresponding mime-type is set.
+ */
 fileHandler = function(path){
     response = new Object();
     response.data = new QByteArray();
@@ -47,6 +53,9 @@ fileHandler = function(path){
     return response;
 }
 
+/*
+ * Send the cover image of the track currently playing.
+ */
 currentTrackCover = function(path){
     response = new Object();
     response.data = new QByteArray();
@@ -58,6 +67,9 @@ currentTrackCover = function(path){
     return response;
 }
 
+/*
+ * Crop the string to size max (plus "...").
+ */
 shorten = function(str, max){
     if(str.length > max)
         return str.substring(0,max)+"...";
@@ -65,13 +77,26 @@ shorten = function(str, max){
         return str
 }
 
+/*
+ * Load a file and return the contents as string.
+ */
+loadFile = function(path){
+    data = new QByteArray();
+    file = new QFile(Amarok.Info.scriptPath()+path);
+    file.open(QIODevice.ReadOnly);
+    r = file.readAll().toString();
+    file.close();
+    return r;
+}
+
+/*
+ *  Send div with info about the track currently playing.
+ */
 currentTrackDiv = function(path){
     response = new Object();
     response.data = new QByteArray();
-    file = new QFile(Amarok.Info.scriptPath()+"/www/currentTrack.html");
-    file.open(QIODevice.ReadOnly);
-    div = file.readAll().toString();
-    file.close();
+    response.mimeType = "text/html";
+    div = loadFile("/www/currentTrack.html");
     div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
     div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
     div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
@@ -89,9 +114,27 @@ currentTrackDiv = function(path){
     div = div.replace("###key###", (new Date()).getTime());
     Amarok.debug(div);
     response.data.append(div);
-    response.mimeType = "text/html";
     return response;
 }
+
+playlistDiv = function(path){
+    response = new Object();
+    response.data = new QByteArray();
+    response.mimeType = "text/html";
+    div = loadFile("/www/playlist.html");
+    tracks = "";
+    for(trackidx=0; trackidx<Amarok.Playlist.totalTrackCount(); trackidx=trackidx+1){
+        t = Amarok.Playlist.trackAt(trackidx);
+        tracks += '<li>'+t.artist+' - '+t.title+'</li>';
+    }
+    div = div.replace("###tracks###", tracks);
+    response.data.append(div);
+    return response;
+}
+
+/*
+ * Commands to control the player (the engine):
+ */
 
 nextTrack = function(path){
     Amarok.Engine.Next();
@@ -112,12 +155,26 @@ stop = function(path){
     Amarok.Engine.Stop(false);
 }
 
+incVolume = function(path){
+    Amarok.Engine.IncreaseVolume(VOLUME_STEP);
+}
+
+decVolume = function(path){
+    Amarok.Engine.DecreaseVolume(VOLUME_STEP);
+}
+
+/*
+ * Setup of the HTTP server and its request dispatcher.
+ */
 http = new HTTPServer();
 http.setDefaultHandler(fileHandler);
 http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
 http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
+http.registerHandler("/ajax/playlistDiv", playlistDiv);
 http.registerHandler("/ajax/nextTrack", nextTrack);
 http.registerHandler("/ajax/prevTrack", prevTrack);
 http.registerHandler("/ajax/playPause", playPause);
 http.registerHandler("/ajax/stop", stop);
+http.registerHandler("/ajax/incVolume", incVolume);
+http.registerHandler("/ajax/decVolume", decVolume);
 
