@@ -53,17 +53,33 @@ fileHandler = function(path){
     return response;
 }
 
+pixmapToPNG = function(pixmap, width){
+    data = new QByteArray();
+    buffer = new QBuffer(data);
+    buffer.open(QIODevice.WriteOnly);
+    pixmap.scaledToWidth(width, Qt.SmoothTransformation).save(buffer, "PNG");
+    buffer.close();
+    return data;
+}
+
 /*
  * Send the cover image of the track currently playing.
  */
 currentTrackCover = function(path){
     response = new Object();
-    response.data = new QByteArray();
-    buffer = new QBuffer(response.data);
-    buffer.open(QIODevice.WriteOnly);
-    Amarok.Engine.currentTrack().imagePixmap().scaledToWidth(300, Qt.SmoothTransformation).save(buffer, "PNG");
-    buffer.close();
+    response.data = pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300);
     response.mimeType = "image/png";
+    return response;
+}
+
+/**
+  * 
+  */
+playlistTrackCover = function(path){
+    //FIXME:this is pretty ugly...
+    trackIdx = parseInt(path.substring(path.lastIndexOf("/")+1, path.indexOf("?")));
+    response = new Object();
+    response.data = pixmapToPNG(Amarok.Playlist.trackAt(trackIdx).imagePixmap(), 50);
     return response;
 }
 
@@ -117,6 +133,9 @@ currentTrackDiv = function(path){
     return response;
 }
 
+/*
+ *  Send div for the current playlist.
+ */
 playlistDiv = function(path){
     response = new Object();
     response.data = new QByteArray();
@@ -125,7 +144,7 @@ playlistDiv = function(path){
     tracks = "";
     for(trackidx=0; trackidx<Amarok.Playlist.totalTrackCount(); trackidx=trackidx+1){
         t = Amarok.Playlist.trackAt(trackidx);
-        tracks += '<li>'+t.artist+' - '+t.title+'</li>';
+        tracks += '<li><div style="display:table-row;"><img src="/ajax/playlistTrackCover/'+trackidx+'?'+(new Date()).getTime()+'" width="50" style="display:table-cell; padding-right: 5px;"/><div style="display:table-cell; vertical-align: top;"> '+t.artist+' - '+t.title+'</div></div></li>';
     }
     div = div.replace("###tracks###", tracks);
     response.data.append(div);
@@ -171,6 +190,7 @@ http.setDefaultHandler(fileHandler);
 http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
 http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
 http.registerHandler("/ajax/playlistDiv", playlistDiv);
+http.registerHandler("/ajax/playlistTrackCover", playlistTrackCover);
 http.registerHandler("/ajax/nextTrack", nextTrack);
 http.registerHandler("/ajax/prevTrack", prevTrack);
 http.registerHandler("/ajax/playPause", playPause);
