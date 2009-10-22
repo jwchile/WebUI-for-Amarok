@@ -2,6 +2,7 @@ Importer.loadQtBinding("qt.core");
 Importer.loadQtBinding("qt.network");
 Importer.loadQtBinding("qt.gui");
 Importer.include("httpserver.js");
+Importer.include("util.js");
 
 fileHandler = function(path){
     response = new Object();
@@ -13,10 +14,6 @@ fileHandler = function(path){
     pathFileInfo = new QFileInfo(Amarok.Info.scriptPath()+"/www"+path);
     if(pathFileInfo.canonicalFilePath().indexOf(canonicalRootDir) != 0){
         Amarok.debug("Forbidden!");
-        Amarok.debug(canonicalRootDir);
-        Amarok.debug(Amarok.Info.scriptPath()+"/www"+path);
-        Amarok.debug(pathFileInfo.canonicalFilePath());
-        Amarok.debug(pathFileInfo.canonicalFilePath().indexOf(canonicalRootDir));
         response.data.append("403 Error: Forbidden!");
         response.mimeType = "text/plain";
         response.retCode = 403;
@@ -38,6 +35,7 @@ fileHandler = function(path){
             response.mimeType = "text/html";
         }
         response.data.append(file.readAll());
+        file.close();
         return response;
     }else{
         Amarok.debug("File not found!");
@@ -54,41 +52,72 @@ currentTrackCover = function(path){
     response.data = new QByteArray();
     buffer = new QBuffer(response.data);
     buffer.open(QIODevice.WriteOnly);
-    Amarok.Engine.currentTrack().imagePixmap().save(buffer, "PNG");
+    Amarok.Engine.currentTrack().imagePixmap().scaledToWidth(300, Qt.SmoothTransformation).save(buffer, "PNG");
     buffer.close();
     response.mimeType = "image/png";
     return response;
 }
 
+shorten = function(str, max){
+    if(str.length > max)
+        return str.substring(0,max)+"...";
+    else
+        return str
+}
+
 currentTrackDiv = function(path){
     response = new Object();
     response.data = new QByteArray();
-    response.data.append('<div id="currentTrack" title="Current Track" class="panel"/>\
-    <h2>Current Track</h2>\
-    <fieldset>\
-        <div class="row">\
-            <label>Artist</label>\
-            <span>');
-    response.data.append(Amarok.Engine.currentTrack().artist);
-    response.data.append('</span></div>\
-        <div class="row">\
-            <label>Title</label>\
-            <span>');
-    response.data.append(Amarok.Engine.currentTrack().title);
-    response.data.append('</span></div>\
-        <div class="row">\
-            <label>Album</label>\
-            <span>');
-    response.data.append(Amarok.Engine.currentTrack().album);
-    response.data.append('</span></div>\
-    </fieldset>\
-    <img src="/ajax/currentTrackCover"/>\
-    </div>');
+    file = new QFile(Amarok.Info.scriptPath()+"/www/currentTrack.html");
+    file.open(QIODevice.ReadOnly);
+    div = file.readAll().toString();
+    file.close();
+    div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
+    div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
+    div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
+    length = Amarok.Engine.currentTrack().length;
+    minutes = Math.floor(length/60);
+    seconds = length-(minutes*60);
+    if(seconds.toString().length == 1)
+        seconds = "0"+seconds
+    div = div.replace("###minutes###", minutes);
+    div = div.replace("###seconds###", seconds);
+    if(Amarok.Engine.engineState() == 0)/*currently playing*/
+        div = div.replace("###playpause###", "Pause");
+    else
+        div = div.replace("###playpause###", "Play");
+    div = div.replace("###key###", (new Date()).getTime());
+    Amarok.debug(div);
+    response.data.append(div);
     response.mimeType = "text/html";
     return response;
+}
+
+nextTrack = function(path){
+    Amarok.Engine.Next();
+}
+
+prevTrack = function(path){
+    Amarok.Engine.Prev();
+}
+
+playPause = function(path){
+    if(Amarok.Engine.engineState() == 0)
+        Amarok.Engine.Pause();
+    else
+        Amarok.Engine.Play();
+}
+
+stop = function(path){
+    Amarok.Engine.Stop(false);
 }
 
 http = new HTTPServer();
 http.setDefaultHandler(fileHandler);
 http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
 http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
+http.registerHandler("/ajax/nextTrack", nextTrack);
+http.registerHandler("/ajax/prevTrack", prevTrack);
+http.registerHandler("/ajax/playPause", playPause);
+http.registerHandler("/ajax/stop", stop);
+

@@ -1,11 +1,6 @@
 Importer.loadQtBinding("qt.core");
 Importer.loadQtBinding("qt.network");
-
-//Convenience function
-QByteArray.prototype.toString = function(){
-    ts = new QTextStream( this, QIODevice.ReadOnly );
-    return ts.readAll();
-}
+Importer.include("util.js");
 
 function HTTPServer(){
     QTcpServer.call(this, null);

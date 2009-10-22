@@ -4,21 +4,22 @@
 <head>
   <title>Amarok WebUI</title>
   <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+  <meta http-equiv="PRAGMA" content="NO-CACHE" /> 
+  <meta http-equiv="CACHE-CONTROL" content="NO-STORE, NO-CACHE, MUST-REVALIDATE, POST-CHECK=0, PRE-CHECK=0" /> 
+  <meta http-equiv="EXPIRES" content="01 Jan 1970 00:00:00 GMT" /> 
+  <meta http-equiv="Last-Modified" content="01 Jan 1970 00:00:00 GMT" /> 
+  <meta http-equiv="If-Modified-Since" content="01 Jan 1970 00:00:00 GMT" /> 
   <style type="text/css" media="screen">@import "/iui/iui.css";</style>
   <script type="application/x-javascript" src="/iui/iui.js"></script>
   <script type="text/javascript">
     iui.animOn = true;
     function fillDiv(url, target) {
-        document.getElementById(target).innerHTML = ' Fetching data...';
-        if (window.XMLHttpRequest) {
-            req = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            req = new ActiveXObject("Microsoft.XMLHTTP");
-        }
+        /*document.getElementById(target).innerHTML = ' Fetching data...';*/
+        req = new XMLHttpRequest();
         if (req != undefined) {
             req.onreadystatechange = function(){
-                if (req.readyState == 4) { // only if req is "loaded"
-                    if (req.status == 200) { // only if "OK"
+                if (req.readyState == 4) {
+                    if (req.status == 200) {
                         document.getElementById(target).innerHTML = req.responseText;
                     } else {
                         document.getElementById(target).innerHTML=" Error:\n"+ req.status + "\n" +req.statusText;
@@ -28,6 +29,29 @@
             req.open("GET", url, true);
             req.send("");
         }
+    }
+    function nextTrack(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/nextTrack", true);
+        req.send("");
+    }
+    function prevTrack(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/prevTrack", true);
+        req.send("");
+    }
+    function playPause(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/playPause", true);
+        req.send("");
+    }
+    function astop(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/stop", true);
+        req.send("");
+    }
+    function reloadCurrentTrack(){
+        fillDiv('/ajax/currentTrackDiv', 'currentTrack');
     }
   </script>
 </head>
