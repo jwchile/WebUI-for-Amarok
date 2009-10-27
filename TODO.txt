@@ -1,0 +1,6 @@
+* Basic authentication (RFC2617)
+* "Push" notifications (http://en.wikipedia.org/wiki/Push_technology#Long_polling).
+* Configuration UI.
+* Collection browsing.
+* Manipulation of playlist (clear, replace with/add song/album).
+* Reorganisation of web UI.
