@@ -24,11 +24,11 @@
 
     <div style="text-align:center">
         <div class="inlineGrayButton" onClick="decVolume();">-</div>
-        <div class="inlineGrayButton" onClick="stop();">Stop</div>
+        <div class="inlineGrayButton" onClick="stop();setTimeout(reloadCurrentTrack, 1000);">Stop</div>
         <div class="inlineGrayButton" onClick="incVolume();">+</div>
     </div>
     <div style="text-align:center">
         <div class="inlineGrayButton" onClick="reloadCurrentTrack();">Reload</div>
     </div>
-    <img src="/ajax/currentTrackCover?key=###key###"/>
+    ###coverimg###
 </div>

@@ -5,6 +5,9 @@ Importer.include("httpserver.js");
 Importer.include("util.js");
 Importer.include("conf.js");
 
+ENGINE_STATE_PLAY = 0
+ENGINE_STATE_PAUSE = 1
+
 /*
  * Serve a file from the <scriptPath>/www folder.
  * If path is pointing to a parent directory a 403 is sent.
@@ -67,8 +70,13 @@ pixmapToPNG = function(pixmap, width){
  */
 currentTrackCover = function(path){
     response = new Object();
-    response.data = pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300);
     response.mimeType = "image/png";
+    engineState = Amarok.Engine.engineState();
+    if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
+        response.data = pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300);
+    }else{
+        response.data = new QByteArray();
+    }
     return response;
 }
 
@@ -79,7 +87,8 @@ playlistTrackCover = function(path){
     //FIXME:this is pretty ugly...
     trackIdx = parseInt(path.substring(path.lastIndexOf("/")+1, path.indexOf("?")));
     response = new Object();
-    response.data = pixmapToPNG(Amarok.Playlist.trackAt(trackIdx).imagePixmap(), 50);
+    pixmap = Amarok.Playlist.trackAt(trackIdx).imagePixmap();
+    response.data = pixmapToPNG(pixmap, 50);
     return response;
 }
 
@@ -112,23 +121,32 @@ currentTrackDiv = function(path){
     response = new Object();
     response.data = new QByteArray();
     response.mimeType = "text/html";
+    engineState = Amarok.Engine.engineState();
     div = loadFile("/www/currentTrack.html");
-    div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
-    div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
-    div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
-    length = Amarok.Engine.currentTrack().length;
-    minutes = Math.floor(length/60);
-    seconds = length-(minutes*60);
-    if(seconds.toString().length == 1)
-        seconds = "0"+seconds
-    div = div.replace("###minutes###", minutes);
-    div = div.replace("###seconds###", seconds);
+    if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
+        div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
+        div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
+        div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
+        length = Amarok.Engine.currentTrack().length;
+        minutes = Math.floor(length/60);
+        seconds = length-(minutes*60);
+        if(seconds.toString().length == 1)
+            seconds = "0"+seconds
+        div = div.replace("###minutes###", minutes);
+        div = div.replace("###seconds###", seconds);
+        div = div.replace("###coverimg###", '<img src="/ajax/currentTrackCover?key='+(new Date()).getTime()+'"/>');
+    }else{
+        div = div.replace("###artist###", "None");
+        div = div.replace("###title###", "None");
+        div = div.replace("###album###", "None");
+        div = div.replace("###minutes###", "");
+        div = div.replace("###seconds###", "");
+        div = div.replace("###coverimg###", "");
+    }
     if(Amarok.Engine.engineState() == 0)/*currently playing*/
         div = div.replace("###playpause###", "Pause");
     else
         div = div.replace("###playpause###", "Play");
-    div = div.replace("###key###", (new Date()).getTime());
-    Amarok.debug(div);
     response.data.append(div);
     return response;
 }
@@ -144,7 +162,7 @@ playlistDiv = function(path){
     tracks = "";
     for(trackidx=0; trackidx<Amarok.Playlist.totalTrackCount(); trackidx=trackidx+1){
         t = Amarok.Playlist.trackAt(trackidx);
-        tracks += '<li><div style="display:table-row;"><img src="/ajax/playlistTrackCover/'+trackidx+'?'+(new Date()).getTime()+'" width="50" style="display:table-cell; padding-right: 5px;"/><div style="display:table-cell; vertical-align: top;"> '+t.artist+' - '+t.title+'</div></div></li>';
+        tracks += '<li><div style="display:table-row;"><img src="/ajax/playlistTrackCover/'+trackidx+'?'+(new Date()).getTime()+'" width="50" style="display:table-cell; padding-right: 5px;"/><div style="display:table-cell; vertical-align: top;"> '+shorten(t.artist, 20)+' <br/> '+shorten(t.title, 20)+'</div></div></li>';
     }
     div = div.replace("###tracks###", tracks);
     response.data.append(div);
@@ -155,12 +173,21 @@ playlistDiv = function(path){
  * Commands to control the player (the engine):
  */
 
+emptyAjaxResponse = function(){
+    response = new Object();
+    response.data = new QByteArray();
+    response.mimeType = "text/html";
+    return response
+}
+
 nextTrack = function(path){
     Amarok.Engine.Next();
+    return emptyAjaxResponse();
 }
 
 prevTrack = function(path){
     Amarok.Engine.Prev();
+    return emptyAjaxResponse();
 }
 
 playPause = function(path){
@@ -168,18 +195,22 @@ playPause = function(path){
         Amarok.Engine.Pause();
     else
         Amarok.Engine.Play();
+    return emptyAjaxResponse();
 }
 
 stop = function(path){
     Amarok.Engine.Stop(false);
+    return emptyAjaxResponse();
 }
 
 incVolume = function(path){
     Amarok.Engine.IncreaseVolume(VOLUME_STEP);
+    return emptyAjaxResponse();
 }
 
 decVolume = function(path){
     Amarok.Engine.DecreaseVolume(VOLUME_STEP);
+    return emptyAjaxResponse();
 }
 
 /*

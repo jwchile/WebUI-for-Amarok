@@ -15,12 +15,15 @@ function HTTPServer(){
      Amarok.Window.Statusbar.longMessage("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
     this.newConnection.connect(this, this.newConnectionCallback);
     this.requestHandlerRegistry = new Object();
+    this.pendingRequestHandlerTimer = new QTimer();
+    this.pendingRequestHandlerTimer.timeout.connect(this, this.handlePendingRequests);
 }
 
 HTTPServer.prototype = new QTcpServer();
 
+HTTPServer.prototype.requestQueue = new Array();
+
 HTTPServer.prototype.newConnectionCallback = function(){
-    Amarok.debug("New request...");
     var socket = this.nextPendingConnection();
     var request = new QByteArray();
     var thisHTTP = this;
@@ -31,15 +34,31 @@ HTTPServer.prototype.newConnectionCallback = function(){
             if( endOfRequest > 0 ){
                 try{
                     var header = new QHttpRequestHeader(request.left(endOfRequest + 4).toString());
+                    thisHTTP.requestQueue.push(new Array(socket, header.path()));
                     request.clear();
-                    Amarok.debug("Path: "+header.path());
-                    thisHTTP.handleRequest(socket, header.path());
+                    /*Sometimes the script/handling of a request get's interrupted by Amarok.*/
+                    /*Check if the request was handled successfully in 1000ms*/
+                    thisHTTP.pendingRequestHandlerTimer.start(100);
+                    /*Handle request*/
+                    thisHTTP.handlePendingRequests();
+                    /*thisHTTP.handleRequest(socket, header.path());*/
                 }catch( error ){
                     Amarok.debug(error)
                 }
             }
         }
     );
+}
+
+HTTPServer.prototype.handlePendingRequests = function(){
+    while(this.requestQueue.length > 0){
+        r = this.requestQueue[0];
+        Amarok.debug("Pending: Handling request (left: "+this.requestQueue.length+"): "+r[0]+" "+r[1]);
+        this.handleRequest(r[0], r[1]);
+        this.requestQueue.shift();
+        Amarok.debug("Handled request (left: "+this.requestQueue.length+")");
+    }
+    this.pendingRequestHandlerTimer.stop();
 }
 
 HTTPServer.prototype.setDefaultHandler = function(func){
@@ -52,9 +71,7 @@ HTTPServer.prototype.registerHandler = function(path, func){
 
 HTTPServer.prototype.getRequestHandler = function(path){
     for(var registeredPath in this.requestHandlerRegistry){
-        Amarok.debug("registeredPath "+registeredPath+" "+path);
         if(path.indexOf(registeredPath)==0){
-            Amarok.debug("hit!");
             return this.requestHandlerRegistry[registeredPath];
         }
     }
@@ -76,7 +93,6 @@ HTTPServer.prototype.handleRequest = function(socket, path){
         responseHeader.setValue("Content-Type", responseContent.mimeType);
         response = new QByteArray();
         response.append(responseHeader.toString());
-        //response.append("\r\n");
         response.append(responseContent.data);
         socket.write(response);
      }else{
@@ -87,7 +103,6 @@ HTTPServer.prototype.handleRequest = function(socket, path){
         responseHeader.setValue("Content-Type", "text/html");
         response = new QByteArray();
         response.append(responseHeader.toString());
-        //response.append("\r\n");
         response.append(responseContent);
         socket.write(response);
      }
