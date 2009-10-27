@@ -18,18 +18,15 @@
 Importer.loadQtBinding("qt.core");
 Importer.loadQtBinding("qt.network");
 Importer.include("util.js");
+Importer.include("conf.js");
 
 function HTTPServer(){
     QTcpServer.call(this, null);
-    var portNumber = 8080;
-    do{
-        var connected = this.listen(new QHostAddress(QHostAddress.Any), portNumber);
-        portNumber++;
-    }while(!connected && ((this.serverError() & QAbstractSocket.AddressInUseError)==0) && portNumber < 9000)
+    this.listen(new QHostAddress(QHostAddress.Any), PORT);
     if(!this.isListening()){
-        Amarok.alert("Unable to open a port for the web server.");
+        Amarok.alert("Unable to open on port "+PORT+" for the web server.");
     }
-     Amarok.Window.Statusbar.longMessage("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
+    Amarok.Window.Statusbar.longMessage("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
     this.newConnection.connect(this, this.newConnectionCallback);
     this.requestHandlerRegistry = new Object();
     this.pendingRequestHandlerTimer = new QTimer();
