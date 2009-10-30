@@ -93,21 +93,21 @@ HTTPServer.prototype.getRequestHandler = function(path){
 }
 
 HTTPServer.prototype.handleRequest = function(socket, path){
-    handler = this.getRequestHandler(path);
+	handler = this.getRequestHandler(path);
     if (handler != null){
-        responseContent = handler(path);
-        retCode = 200;
-        reasonPhrase = "OK";
-        if (responseContent["retCode"]){
-            retCode = responseContent.retCode;
-            reasonPhrase = responseContent.reasonPhrase;
-        }
-        responseHeader = new QHttpResponseHeader(retCode, reasonPhrase, 1, 1);
-        responseHeader.setContentLength(responseContent.data.length());
-        responseHeader.setValue("Content-Type", responseContent.mimeType);
+		var handlerResponse;
+		try {
+			handlerResponse = handler(path);
+		} catch (e) {
+			Amarok.debug("Error while handling request ["+path+"]: "+e.toString());	
+		}		
+        responseHeader = new QHttpResponseHeader(handlerResponse.retCode, handlerResponse.reasonPhrase, 1, 1);
+        /*if(!handlerResponse.content instanceof QByteArray)*/
+		Amarok.alert("Content"+handlerResponse.content.toString());		
+        responseHeader.setValue("Content-Type", handlerResponse.mimeType);
         response = new QByteArray();
         response.append(responseHeader.toString());
-        response.append(responseContent.data);
+        response.append(handlerResponse.content);
         socket.write(response);
      }else{
         responseContent = new QByteArray();
@@ -120,4 +120,24 @@ HTTPServer.prototype.handleRequest = function(socket, path){
         response.append(responseContent);
         socket.write(response);
      }
+}
+
+function HandlerResponse(){
+	this.content = new QByteArray();
+	this.retCode = 200;
+	this.reasonPhrase = "OK";
+	this.mimeType = "text/html";
+}
+
+HandlerResponse.prototype.setReturnCode = function(retCode, reasonPhrase){
+	this.retCode = retCode;
+	this.reasonPhrase = reasonPhrase;
+}
+
+HandlerResponse.prototype.append = function(content){
+	this.content.append(content);
+}
+
+HandlerResponse.prototype.setMimeType = function(mimeType){
+	this.mimeType = mimeType;
 }

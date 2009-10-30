@@ -21,124 +21,46 @@ Importer.loadQtBinding("qt.network");
 Importer.loadQtBinding("qt.gui");
 Importer.include("httpserver.js");
 Importer.include("util.js");
+Importer.include("fileio.js");
+Importer.include("amarokctrl.js");
 Importer.include("conf.js");
 
 ENGINE_STATE_PLAY = 0
 ENGINE_STATE_PAUSE = 1
 
-/*
- * Serve a file from the <scriptPath>/www folder.
- * If path is pointing to a parent directory a 403 is sent.
- * For some file types the corresponding mime-type is set.
- */
-fileHandler = function(path){
-    response = new Object();
-    response.data = new QByteArray();
-    if(path === "/" || path === ""){
-        path = "/index.html";
-    }
-    canonicalRootDir = new QFileInfo(Amarok.Info.scriptPath()+"/www").canonicalFilePath();
-    pathFileInfo = new QFileInfo(Amarok.Info.scriptPath()+"/www"+path);
-    if(pathFileInfo.canonicalFilePath().indexOf(canonicalRootDir) != 0){
-        Amarok.debug("Forbidden!");
-        response.data.append("403 Error: Forbidden!");
-        response.mimeType = "text/plain";
-        response.retCode = 403;
-        response.reasonPhrase = "Forbidden";
-        return response;
-    }
-    Amarok.debug("File: "+pathFileInfo.canonicalFilePath());
-    file = new QFile(pathFileInfo.canonicalFilePath());
-    if(file.open(QIODevice.ReadOnly)){
-        if( pathFileInfo.completeSuffix() == "css" ){
-            response.mimeType = "text/css";
-        }else if( pathFileInfo.completeSuffix() == "js" ){
-            response.mimeType = "text/js";
-        }else if( pathFileInfo.completeSuffix() == "png" ){
-            response.mimeType = "image/png";
-        }else if( pathFileInfo.completeSuffix() == "gif" ){
-            response.mimeType = "image/gif";
-        }else{
-            response.mimeType = "text/html";
-        }
-        response.data.append(file.readAll());
-        file.close();
-        return response;
-    }else{
-        Amarok.debug("File not found!");
-        response.data.append("404 Error: File not found!");
-        response.retCode = 404;
-        response.reasonPhrase = "Not Found";
-        response.mimeType = "text/plain";
-    }
-    return response;
-}
-
-pixmapToPNG = function(pixmap, width){
-    data = new QByteArray();
-    buffer = new QBuffer(data);
-    buffer.open(QIODevice.WriteOnly);
-    pixmap.scaledToWidth(width, Qt.SmoothTransformation).save(buffer, "PNG");
-    buffer.close();
-    return data;
-}
-
-/*
+/**
  * Send the cover image of the track currently playing.
  */
 currentTrackCover = function(path){
-    response = new Object();
-    response.mimeType = "image/png";
+    response = new HandlerResponse();
+    response.setMimeType("image/png");
     engineState = Amarok.Engine.engineState();
     if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
-        response.data = pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300);
-    }else{
-        response.data = new QByteArray();
+        response.append(pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300));
     }
     return response;
 }
 
 /**
-  * 
-  */
+ * Returns the cover image from a playlist track. The track index is
+ * specified in the path btw. the last '/' and the '?'.
+ * FIXME: Implement parsing of HTTP GET parameters
+ */
 playlistTrackCover = function(path){
     //FIXME:this is pretty ugly...
     trackIdx = parseInt(path.substring(path.lastIndexOf("/")+1, path.indexOf("?")));
-    response = new Object();
+    response = new HandlerResponse();
+	response.setMimeType("image/png");
     pixmap = Amarok.Playlist.trackAt(trackIdx).imagePixmap();
-    response.data = pixmapToPNG(pixmap, 50);
+    response.append(pixmapToPNG(pixmap, 50));
     return response;
 }
 
-/*
- * Crop the string to size max (plus "...").
- */
-shorten = function(str, max){
-    if(str.length > max)
-        return str.substring(0,max)+"...";
-    else
-        return str
-}
-
-/*
- * Load a file and return the contents as string.
- */
-loadFile = function(path){
-    data = new QByteArray();
-    file = new QFile(Amarok.Info.scriptPath()+path);
-    file.open(QIODevice.ReadOnly);
-    r = file.readAll().toString();
-    file.close();
-    return r;
-}
-
-/*
+/**
  *  Send div with info about the track currently playing.
  */
 currentTrackDiv = function(path){
-    response = new Object();
-    response.data = new QByteArray();
-    response.mimeType = "text/html";
+    response = new HandlerResponse();    
     engineState = Amarok.Engine.engineState();
     div = loadFile("/www/currentTrack.html");
     if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
@@ -165,7 +87,7 @@ currentTrackDiv = function(path){
         div = div.replace("###playpause###", "Pause");
     else
         div = div.replace("###playpause###", "Play");
-    response.data.append(div);
+    response.append(div);
     return response;
 }
 
@@ -173,9 +95,7 @@ currentTrackDiv = function(path){
  *  Send div for the current playlist.
  */
 playlistDiv = function(path){
-    response = new Object();
-    response.data = new QByteArray();
-    response.mimeType = "text/html";
+    response = new HandlerResponse();
     div = loadFile("/www/playlist.html");
     tracks = "";
     for(trackidx=0; trackidx<Amarok.Playlist.totalTrackCount(); trackidx=trackidx+1){
@@ -183,52 +103,8 @@ playlistDiv = function(path){
         tracks += '<li><div style="display:table-row;"><img src="/ajax/playlistTrackCover/'+trackidx+'?'+(new Date()).getTime()+'" width="50" style="display:table-cell; padding-right: 5px;"/><div style="display:table-cell; vertical-align: top;"> '+shorten(t.artist, 20)+' <br/> '+shorten(t.title, 20)+'</div></div></li>';
     }
     div = div.replace("###tracks###", tracks);
-    response.data.append(div);
+    response.append(div);
     return response;
-}
-
-/*
- * Commands to control the player (the engine):
- */
-
-emptyAjaxResponse = function(){
-    response = new Object();
-    response.data = new QByteArray();
-    response.mimeType = "text/html";
-    return response
-}
-
-nextTrack = function(path){
-    Amarok.Engine.Next();
-    return emptyAjaxResponse();
-}
-
-prevTrack = function(path){
-    Amarok.Engine.Prev();
-    return emptyAjaxResponse();
-}
-
-playPause = function(path){
-    if(Amarok.Engine.engineState() == 0)
-        Amarok.Engine.Pause();
-    else
-        Amarok.Engine.Play();
-    return emptyAjaxResponse();
-}
-
-stop = function(path){
-    Amarok.Engine.Stop(false);
-    return emptyAjaxResponse();
-}
-
-incVolume = function(path){
-    Amarok.Engine.IncreaseVolume(VOLUME_STEP);
-    return emptyAjaxResponse();
-}
-
-decVolume = function(path){
-    Amarok.Engine.DecreaseVolume(VOLUME_STEP);
-    return emptyAjaxResponse();
 }
 
 /*
