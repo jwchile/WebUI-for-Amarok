@@ -103,6 +103,7 @@ HTTPServer.prototype.handleRequest = function(socket, path){
 		}		
         responseHeader = new QHttpResponseHeader(handlerResponse.retCode, handlerResponse.reasonPhrase, 1, 1);
         /*if(!handlerResponse.content instanceof QByteArray)*/
+		//FIXME: In some cases handlerResponse.content does not seem to be a valid QByteArray.
 		Amarok.alert("Content"+handlerResponse.content.toString());		
         responseHeader.setValue("Content-Type", handlerResponse.mimeType);
         response = new QByteArray();
