@@ -29,9 +29,12 @@ fileHandler = function(path){
         path = "/index.html";
     }
     canonicalRootDir = new QFileInfo(Amarok.Info.scriptPath()+"/www").canonicalFilePath();
+	Amarok.debug(Amarok.Info.scriptPath()+"/www"+path);
     pathFileInfo = new QFileInfo(Amarok.Info.scriptPath()+"/www"+path);
     if(pathFileInfo.canonicalFilePath().indexOf(canonicalRootDir) != 0){
         Amarok.debug("Forbidden!");
+		Amarok.debug(pathFileInfo.canonicalFilePath());
+		Amarok.debug(canonicalRootDir);
         response.append("403 Error: Forbidden!");
         response.setMimeType("text/plain");
         response.setReturnCode(403, "Forbidden");
