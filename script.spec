@@ -2,9 +2,9 @@
 Icon=get-hot-new-stuff-amarok
 Type=script
 ServiceTypes=KPluginInfo
-Name=Amarok WebUI
+Name=WebUI for Amarok
 
-Comment=A script that offers a (limited) web interface.
+Comment=A script that offers a (limited) web interface to amarok.
 
 X-KDE-PluginInfo-Author=Johannes Wolter
 X-KDE-PluginInfo-Email=jw@inutil.org
