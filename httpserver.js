@@ -103,9 +103,10 @@ HTTPServer.prototype.handleRequest = function(socket, path){
 			Amarok.debug("Error while handling request ["+path+"]: "+e.toString());	
 		}		
         responseHeader = new QHttpResponseHeader(handlerResponse.retCode, handlerResponse.reasonPhrase, 1, 1);
-        /*if(!handlerResponse.content instanceof QByteArray)*/
+        /*if(!handlerResponse.content instanceof QByteArray)
+			Amarok.alert("Content"+handlerResponse.content.toString());*/
 		//FIXME: In some cases handlerResponse.content does not seem to be a valid QByteArray.
-		Amarok.alert("Content"+handlerResponse.content.toString());		
+		responseHeader.setValue("Content-Length", handlerResponse.content.length());
         responseHeader.setValue("Content-Type", handlerResponse.mimeType);
         response = new QByteArray();
         response.append(responseHeader.toString());
