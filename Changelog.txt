@@ -1,2 +1,14 @@
+0.2 2009-10-31
+    * Added basic HTTP authentication
+        Since this doesn't really offer security on unsecure connections
+	digest authentication be implemented soon.
+        The credentials currently are: login=foo passwd=bar67#
+        They can be changed in $HOME/.kde/share/apps/amarok/scripts/amarok-webui/conf.js
+    * Added collection browsing
+        Currently only the artists and their albums can be browsed.
+        Adding/replacing albums or songs from the collection to/in the
+        playlist will be added soon.
+    * Fixed error in debug message
+    * Code refactoring
 0.1 2009-10-28
     * Initial Release

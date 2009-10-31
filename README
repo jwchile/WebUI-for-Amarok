@@ -1,6 +1,15 @@
+==Configuration==
+The web UI can be accessed with your web browser at the port specified in
+$HOME/.kde/share/apps/amarok/scripts/amarok-webui/conf.js (default is 8080).
+Per default you need to authentiate for accessing the UI; the credentials 
+can be set in conf.js as well (only basic HTTP auth, which is _not_ secure
+on untrusted connections). The default ist 
+	login=foo 
+	passwd=bar67#
+
 ==Copyright==
 (c) 2009 Johannes Wolter <jw@inutil.org>
-The implementation is based on some code of Ian Monroe <ian@monroe.nu>.
+Some code of Ian Monroe <ian@monroe.nu> has been used as a starting point.
 
 The files in www/iui belong to iUI (User Interface Framework for Safari 
 development on iPhone). For details:
