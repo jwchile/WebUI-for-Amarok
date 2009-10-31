@@ -108,6 +108,49 @@ playlistDiv = function(path){
 }
 
 /*
+ *  Send div with all artists in the collection.
+ */
+collectionArtistsDiv = function(path){
+    response = new HandlerResponse();
+    div = loadFile("/www/collection.html");
+    artists = "";
+	artistsQuery = Amarok.Collection.query("SELECT name, id FROM artists ORDER BY name;");
+	startChar = "";
+    for(artistidx=0; artistidx<artistsQuery.length; artistidx++){		 
+		artist = artistsQuery[artistidx++];
+		artistId = artistsQuery[artistidx];
+		if (artist.length > 0 && startChar != artist[0].toUpperCase()){
+			startChar = artist[0].toUpperCase();
+			artists += '<li class="group">'+startChar+'</li>';
+			
+		}
+		if (artist.length>0){
+			artists += '<li><a href="/ajax/collectionArtistAlbumsDiv/'+artistId+'">'+shorten(artist, 25)+'</a></li>';			
+		}        
+    }
+    response.append(div.replace("###artists###", artists));
+    return response;
+}
+
+collectionArtistAlbumsDiv = function(path){
+	//FIXME:this is pretty ugly...
+    artistIdx = parseInt(path.substring(path.lastIndexOf("/")+1));
+	response = new HandlerResponse();
+    div = loadFile("/www/collectionArtistAlbums.html");
+	albums = '<li><a href="/ajax/collectionArtistAllSongsDiv/'+artistIdx+'">All Songs</a></li>';
+	albumsQuery = Amarok.Collection.query('SELECT name, id FROM albums WHERE artist = '+artistIdx+';')
+	for(albumidx = 0; albumidx<albumsQuery.length; albumidx++){
+		album = albumsQuery[albumidx++];
+		albumId = albumsQuery[albumidx];
+		if (album.length>0){
+			albums += '<li><a href="/ajax/collectionAlbum/'+albumidx+'">'+shorten(album, 25)+'</a></li>';			
+		}
+	}
+    response.append(div.replace("###content###", albums));
+    return response;
+}
+
+/*
  * Setup of the HTTP server and its request dispatcher.
  */
 http = new HTTPServer();
@@ -116,6 +159,8 @@ http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
 http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
 http.registerHandler("/ajax/playlistDiv", playlistDiv);
 http.registerHandler("/ajax/playlistTrackCover", playlistTrackCover);
+http.registerHandler("/ajax/collectionDiv", collectionArtistsDiv);
+http.registerHandler("/ajax/collectionArtistAlbumsDiv", collectionArtistAlbumsDiv);
 http.registerHandler("/ajax/nextTrack", nextTrack);
 http.registerHandler("/ajax/prevTrack", prevTrack);
 http.registerHandler("/ajax/playPause", playPause);
