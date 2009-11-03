@@ -69,6 +69,7 @@ HTTPServer.prototype.handlePendingRequests = function(){
     while(this.requestQueue.length > 0){
         r = this.requestQueue[0];
         Amarok.debug("Pending: Handling request (left: "+this.requestQueue.length+"): "+r[1].path());
+		//FIXME: check for infinite loops (e.g. when handle requests always throws an exception -> trial counter?)
         this.handleRequest(r[0], r[1]);
         this.requestQueue.shift();
         Amarok.debug("Handled request (left: "+this.requestQueue.length+")");

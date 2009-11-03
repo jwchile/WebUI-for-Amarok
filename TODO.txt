@@ -4,3 +4,4 @@
 * Collection browsing.
 * Manipulation of playlist (clear, replace with/add song/album).
 * Reorganisation of web UI.
+* Play/Pause/Stop button images
