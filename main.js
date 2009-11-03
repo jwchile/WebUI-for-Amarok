@@ -167,4 +167,5 @@ http.registerHandler("/ajax/playPause", playPause);
 http.registerHandler("/ajax/stop", stop);
 http.registerHandler("/ajax/incVolume", incVolume);
 http.registerHandler("/ajax/decVolume", decVolume);
+http.registerHandler("/ajax/addAlbumToPlaylist", addAlbumToPlaylist);
 

@@ -52,3 +52,15 @@ decVolume = function(path){
     Amarok.Engine.DecreaseVolume(VOLUME_STEP);
     return new HandlerResponse();
 }
+
+addAlbumToPlaylist = function(path){
+	albumId = parseInt(path.substring(path.lastIndexOf("/") + 1));
+	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.album = ' + albumId + ';')
+	for (trackIdx = 0; trackIdx < tracksQuery.length; trackIdx++) {
+		//FIXME: Why isn't query already returning a valid string?
+		url = new String(Amarok.Collection.query('SELECT rpath FROM urls WHERE id = ' + tracksQuery[trackIdx] + ';'));
+		//FIXME: this does not seem right
+		Amarok.Playlist.addMedia(new QUrl('file://' + url.substring(1)));
+	}
+	return new HandlerResponse();
+}
