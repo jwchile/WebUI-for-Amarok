@@ -1,5 +1,6 @@
 /*
  *    Copyright (C) 2009 by Johannes Wolter <jw@inutil.org>
+ *                          Uses some code of the webcontrol script from
  *                          Ian Monroe <ian@monroe.nu>
  *
  *    This program is free software: you can redistribute it and/or modify
