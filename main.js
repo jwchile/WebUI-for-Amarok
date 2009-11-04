@@ -1,5 +1,6 @@
 /*
- *    Copyright (C) 2009 by Johannes Wolter <jw@inutil.org>
+ *    Copyright (C) 2009 by Johannes Wolter <jw@inutil.org>    
+ *         		 			Based on some code of "webcontrol" from
  *                          Ian Monroe <ian@monroe.nu>
  *
  *    This program is free software: you can redistribute it and/or modify
@@ -23,148 +24,13 @@ Importer.include("httpserver.js");
 Importer.include("util.js");
 Importer.include("fileio.js");
 Importer.include("amarokctrl.js");
+Importer.include("amarokcontent.js");
 Importer.include("conf.js");
 
 ENGINE_STATE_PLAY = 0
 ENGINE_STATE_PAUSE = 1
 
-/**
- * Send the cover image of the track currently playing.
- */
-currentTrackCover = function(path){
-    response = new HandlerResponse();
-    response.setMimeType("image/png");
-    engineState = Amarok.Engine.engineState();
-    if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
-        response.append(pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300));
-    }
-    return response;
-}
 
-/**
- * Returns the cover image from a playlist track. The track index is
- * specified in the path btw. the last '/' and the '?'.
- * FIXME: Implement parsing of HTTP GET parameters
- */
-playlistTrackCover = function(path){
-    //FIXME:this is pretty ugly...
-    trackIdx = parseInt(path.substring(path.lastIndexOf("/")+1, path.indexOf("?")));
-    response = new HandlerResponse();
-	response.setMimeType("image/png");
-    pixmap = Amarok.Playlist.trackAt(trackIdx).imagePixmap();
-    response.append(pixmapToPNG(pixmap, 50));
-    return response;
-}
-
-/**
- *  Send div with info about the track currently playing.
- */
-currentTrackDiv = function(path){
-    response = new HandlerResponse();    
-    engineState = Amarok.Engine.engineState();
-    div = loadFile("/www/currentTrack.html");
-    if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
-        div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
-        div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
-        div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
-        length = Amarok.Engine.currentTrack().length;
-        minutes = Math.floor(length/60);
-        seconds = length-(minutes*60);
-        if(seconds.toString().length == 1)
-            seconds = "0"+seconds
-        div = div.replace("###minutes###", minutes);
-        div = div.replace("###seconds###", seconds);
-        div = div.replace("###coverimg###", '<img src="/ajax/currentTrackCover?key='+(new Date()).getTime()+'"/>');
-    }else{
-        div = div.replace("###artist###", "None");
-        div = div.replace("###title###", "None");
-        div = div.replace("###album###", "None");
-        div = div.replace("###minutes###", "");
-        div = div.replace("###seconds###", "");
-        div = div.replace("###coverimg###", "");
-    }
-    if(Amarok.Engine.engineState() == 0)/*currently playing*/
-        div = div.replace("###playpause###", "pause");
-    else
-        div = div.replace("###playpause###", "play");
-    response.append(div);
-    return response;
-}
-
-/*
- *  Send div for the current playlist.
- */
-playlistDiv = function(path){
-    response = new HandlerResponse();
-    div = loadFile("/www/playlist.html");
-    tracks = "";
-    for(trackidx=0; trackidx<Amarok.Playlist.totalTrackCount(); trackidx=trackidx+1){
-        t = Amarok.Playlist.trackAt(trackidx);
-        tracks += '<li><div style="display:table-row;"><img src="/ajax/playlistTrackCover/'+trackidx+'?'+(new Date()).getTime()+'" width="50" style="display:table-cell; padding-right: 5px;"/><div style="display:table-cell; vertical-align: top;"> '+shorten(t.artist, 20)+' <br/> '+shorten(t.title, 20)+'</div></div></li>';
-    }
-    div = div.replace("###tracks###", tracks);
-    response.append(div);
-    return response;
-}
-
-/*
- *  Send div with all artists in the collection.
- */
-collectionArtistsDiv = function(path){
-    response = new HandlerResponse();
-    div = loadFile("/www/collection.html");
-    artists = "";
-	artistsQuery = Amarok.Collection.query("SELECT name, id FROM artists ORDER BY name;");
-	startChar = "";
-    for(artistidx=0; artistidx<artistsQuery.length; artistidx++){		 
-		artist = artistsQuery[artistidx++];
-		artistId = artistsQuery[artistidx];
-		if (artist.length > 0 && startChar != artist[0].toUpperCase()){
-			startChar = artist[0].toUpperCase();
-			artists += '<li class="group">'+startChar+'</li>';
-			
-		}
-		if (artist.length>0){
-			artists += '<li><a href="/ajax/collectionArtistAlbumsDiv/'+artistId+'">'+shorten(artist, 25)+'</a></li>';			
-		}        
-    }
-    response.append(div.replace("###artists###", artists));
-    return response;
-}
-
-collectionArtistAlbumsDiv = function(path){
-	//FIXME:this is pretty ugly...
-    artistId = parseInt(path.substring(path.lastIndexOf("/")+1));
-	response = new HandlerResponse();
-    div = loadFile("/www/collectionArtistAlbums.html");
-	albums = '<li><a href="/ajax/collectionArtistAllSongsDiv/'+artistId+'">All Songs</a></li>';
-	albumsQuery = Amarok.Collection.query('SELECT name, id FROM albums WHERE artist = '+artistId+';')
-	for(albumidx = 0; albumidx<albumsQuery.length; albumidx++){
-		album = albumsQuery[albumidx++];
-		albumId = albumsQuery[albumidx];
-		if (album.length>0){
-			albums += '<li><a href="/ajax/collectionAlbumDiv/'+albumId+'">'+shorten(album, 25)+'</a></li>';			
-		}
-	}
-    response.append(div.replace("###content###", albums));
-    return response;
-}
-
-collectionAlbumDiv = function(path){
-	//FIXME:this is pretty ugly...
-    albumId = parseInt(path.substring(path.lastIndexOf("/")+1));
-	albumQuery = Amarok.Collection.query('SELECT name, artist FROM albums WHERE id = '+albumId+';');
-	albumName = albumQuery[0];
-	albumArtist = Amarok.Collection.query('SELECT name FROM artists WHERE id = '+albumQuery[1]+';');
-	response = new HandlerResponse();
-    div = loadFile("/www/collectionAlbum.html");
-	div = div.replace("###album###", albumName);
-	div = div.replace("###artist###", albumArtist);
-	div = div.replace(/###albumid###/g, albumId.toString());	
-    response.append(div);
-	Amarok.debug("albumDiv"+div);
-    return response;
-}
 
 /*
  * Setup of the HTTP server and its request dispatcher.
@@ -178,6 +44,8 @@ http.registerHandler("/ajax/playlistTrackCover", playlistTrackCover);
 http.registerHandler("/ajax/collectionDiv", collectionArtistsDiv);
 http.registerHandler("/ajax/collectionAlbumDiv", collectionAlbumDiv);
 http.registerHandler("/ajax/collectionArtistAlbumsDiv", collectionArtistAlbumsDiv);
+http.registerHandler("/ajax/collectionAllArtistTracksDiv", collectionAllArtistTracksDiv);
+http.registerHandler("/ajax/albumCover", albumCover);
 http.registerHandler("/ajax/nextTrack", nextTrack);
 http.registerHandler("/ajax/prevTrack", prevTrack);
 http.registerHandler("/ajax/playPause", playPause);
@@ -185,5 +53,6 @@ http.registerHandler("/ajax/stop", stop);
 http.registerHandler("/ajax/incVolume", incVolume);
 http.registerHandler("/ajax/decVolume", decVolume);
 http.registerHandler("/ajax/addAlbumToPlaylist", addAlbumToPlaylist);
+http.registerHandler("/ajax/addAllTracksFromArtistToPlaylist", addAllTracksFromArtistToPlaylist); 
 http.registerHandler("/ajax/clearPlaylist", clearPlaylist);
 

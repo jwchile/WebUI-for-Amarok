@@ -75,8 +75,17 @@
 	}
 	function replacePlaylistWithAlbum(albumid){
 		clearPlaylist();
-		//FIXME: Why is addAl... only getting through from time to time -> wireshark!
+		//FIXME: Why is addAl... only getting through from time to time?
 		addAlbumToPlaylist(albumid);		
+	}
+	function addAllArtistTracksToPlaylist(artistid){
+		req = new XMLHttpRequest();
+        req.open("GET", "/ajax/addAllTracksFromArtistToPlaylist/"+artistid, true);
+        req.send("");
+	}
+	function replacePlaylistWithAllArtistTrack(artistid){
+		clearPlaylist();
+		addAllArtistTracksToPlaylist(artistid);
 	}
   </script>
 </head>

@@ -53,15 +53,26 @@ decVolume = function(path){
     return new HandlerResponse();
 }
 
-addAlbumToPlaylist = function(path){
-	albumId = parseInt(path.substring(path.lastIndexOf("/") + 1));
-	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.album = ' + albumId + ';')
-	for (trackIdx = 0; trackIdx < tracksQuery.length; trackIdx++) {
+addTracksToPlaylist = function(tracksQueryResult){
+	for (trackIdx = 0; trackIdx < tracksQueryResult.length; trackIdx++) {
 		//FIXME: Why isn't query already returning a valid string?
-		url = new String(Amarok.Collection.query('SELECT rpath FROM urls WHERE id = ' + tracksQuery[trackIdx] + ';'));
+		url = new String(Amarok.Collection.query('SELECT rpath FROM urls WHERE id = ' + tracksQueryResult[trackIdx] + ';'));
 		//FIXME: this does not seem right
 		Amarok.Playlist.addMedia(new QUrl('file://' + url.substring(1)));
 	}
+}
+
+addAlbumToPlaylist = function(path){
+	albumId = parseInt(path.substring(path.lastIndexOf("/") + 1));
+	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.album = ' + albumId + ';')
+	addTracksToPlaylist(tracksQuery);
+	return new HandlerResponse();
+}
+
+addAllTracksFromArtistToPlaylist = function(path){
+	artistId = parseInt(path.substring(path.lastIndexOf("/") + 1));
+	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.artist = ' + artistId + ';')
+	addTracksToPlaylist(tracksQuery);
 	return new HandlerResponse();
 }
 
