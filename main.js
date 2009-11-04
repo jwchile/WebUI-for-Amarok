@@ -84,9 +84,9 @@ currentTrackDiv = function(path){
         div = div.replace("###coverimg###", "");
     }
     if(Amarok.Engine.engineState() == 0)/*currently playing*/
-        div = div.replace("###playpause###", "Pause");
+        div = div.replace("###playpause###", "pause");
     else
-        div = div.replace("###playpause###", "Play");
+        div = div.replace("###playpause###", "play");
     response.append(div);
     return response;
 }
@@ -134,19 +134,35 @@ collectionArtistsDiv = function(path){
 
 collectionArtistAlbumsDiv = function(path){
 	//FIXME:this is pretty ugly...
-    artistIdx = parseInt(path.substring(path.lastIndexOf("/")+1));
+    artistId = parseInt(path.substring(path.lastIndexOf("/")+1));
 	response = new HandlerResponse();
     div = loadFile("/www/collectionArtistAlbums.html");
-	albums = '<li><a href="/ajax/collectionArtistAllSongsDiv/'+artistIdx+'">All Songs</a></li>';
-	albumsQuery = Amarok.Collection.query('SELECT name, id FROM albums WHERE artist = '+artistIdx+';')
+	albums = '<li><a href="/ajax/collectionArtistAllSongsDiv/'+artistId+'">All Songs</a></li>';
+	albumsQuery = Amarok.Collection.query('SELECT name, id FROM albums WHERE artist = '+artistId+';')
 	for(albumidx = 0; albumidx<albumsQuery.length; albumidx++){
 		album = albumsQuery[albumidx++];
 		albumId = albumsQuery[albumidx];
 		if (album.length>0){
-			albums += '<li><a href="/ajax/collectionAlbum/'+albumidx+'">'+shorten(album, 25)+'</a></li>';			
+			albums += '<li><a href="/ajax/collectionAlbumDiv/'+albumId+'">'+shorten(album, 25)+'</a></li>';			
 		}
 	}
     response.append(div.replace("###content###", albums));
+    return response;
+}
+
+collectionAlbumDiv = function(path){
+	//FIXME:this is pretty ugly...
+    albumId = parseInt(path.substring(path.lastIndexOf("/")+1));
+	albumQuery = Amarok.Collection.query('SELECT name, artist FROM albums WHERE id = '+albumId+';');
+	albumName = albumQuery[0];
+	albumArtist = Amarok.Collection.query('SELECT name FROM artists WHERE id = '+albumQuery[1]+';');
+	response = new HandlerResponse();
+    div = loadFile("/www/collectionAlbum.html");
+	div = div.replace("###album###", albumName);
+	div = div.replace("###artist###", albumArtist);
+	div = div.replace(/###albumid###/g, albumId.toString());	
+    response.append(div);
+	Amarok.debug("albumDiv"+div);
     return response;
 }
 
@@ -160,6 +176,7 @@ http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
 http.registerHandler("/ajax/playlistDiv", playlistDiv);
 http.registerHandler("/ajax/playlistTrackCover", playlistTrackCover);
 http.registerHandler("/ajax/collectionDiv", collectionArtistsDiv);
+http.registerHandler("/ajax/collectionAlbumDiv", collectionAlbumDiv);
 http.registerHandler("/ajax/collectionArtistAlbumsDiv", collectionArtistAlbumsDiv);
 http.registerHandler("/ajax/nextTrack", nextTrack);
 http.registerHandler("/ajax/prevTrack", prevTrack);
@@ -168,4 +185,5 @@ http.registerHandler("/ajax/stop", stop);
 http.registerHandler("/ajax/incVolume", incVolume);
 http.registerHandler("/ajax/decVolume", decVolume);
 http.registerHandler("/ajax/addAlbumToPlaylist", addAlbumToPlaylist);
+http.registerHandler("/ajax/clearPlaylist", clearPlaylist);
 

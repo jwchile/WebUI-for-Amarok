@@ -63,6 +63,21 @@
     function reloadCurrentTrack(){
         fillDiv('/ajax/currentTrackDiv', 'currentTrack');
     }
+	function addAlbumToPlaylist(albumid){
+		req = new XMLHttpRequest();
+        req.open("GET", "/ajax/addAlbumToPlaylist/"+albumid, true);
+        req.send("");
+	}
+	function clearPlaylist(){
+		req = new XMLHttpRequest();
+        req.open("GET", "/ajax/clearPlaylist", true);
+        req.send("");
+	}
+	function replacePlaylistWithAlbum(albumid){
+		clearPlaylist();
+		//FIXME: Why is addAl... only getting through from time to time -> wireshark!
+		addAlbumToPlaylist(albumid);		
+	}
   </script>
 </head>
 

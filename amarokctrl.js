@@ -64,3 +64,8 @@ addAlbumToPlaylist = function(path){
 	}
 	return new HandlerResponse();
 }
+
+clearPlaylist = function(path){
+	Amarok.Playlist.clearPlaylist();
+	return new HandlerResponse();
+}
