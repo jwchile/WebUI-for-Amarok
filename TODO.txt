@@ -1,8 +1,7 @@
-* Basic authentication (RFC2617)
+* Collection browsing. [Done]
+* Manipulation of playlist (clear, replace with/add song/album). [Done; clear button is missing]
+* Basic authentication (RFC2617) [Done, digest auth?]
+* Play/Pause/Stop button images [Done]
+* Make UI more intuitive and appealing
 * "Push" notifications (http://en.wikipedia.org/wiki/Push_technology#Long_polling).
 * Configuration UI.
-* Collection browsing. [Done; add "all songs of an artist" handling]
-* Manipulation of playlist (clear, replace with/add song/album). [Done; fix replace!]
-** Add clear playlist button in the playlist view
-* Reorganisation of web UI.
-* Play/Pause/Stop button images [Done]
