@@ -1,7 +1,8 @@
 * Basic authentication (RFC2617)
 * "Push" notifications (http://en.wikipedia.org/wiki/Push_technology#Long_polling).
 * Configuration UI.
-* Collection browsing.
-* Manipulation of playlist (clear, replace with/add song/album).
+* Collection browsing. [Done; add "all songs of an artist" handling]
+* Manipulation of playlist (clear, replace with/add song/album). [Done; fix replace!]
+** Add clear playlist button in the playlist view
 * Reorganisation of web UI.
-* Play/Pause/Stop button images
+* Play/Pause/Stop button images [Done]
