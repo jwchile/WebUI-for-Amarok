@@ -172,12 +172,12 @@ collectionAlbumDiv = function(path){
 	trackQuery = Amarok.Collection.query('SELECT title FROM tracks WHERE album = '+albumId+';');
 	tracksDiv = "";
 	for(trackidx = 0; trackidx < trackQuery.length; trackidx++){
-		tracksDiv += '<div class="row"><label>'+trackQuery[trackidx]+'</label></div>'
+		tracksDiv += '<div class="row"><label>'+shorten(trackQuery[trackidx], 25)+'</label></div>'
 	}	
 	response = new HandlerResponse();
     div = loadFile("/www/collectionAlbum.html");
-	div = div.replace("###album###", albumName);
-	div = div.replace("###artist###", albumArtist);
+	div = div.replace("###album###", shorten(albumName, 18));
+	div = div.replace("###artist###", shorten(albumArtist,18));
 	div = div.replace(/###albumid###/g, albumId.toString());	
 	div = div.replace("###tracks###", tracksDiv);	
     response.append(div);
@@ -194,12 +194,12 @@ collectionAllArtistTracksDiv = function(path){
 	trackCount = trackQuery.length;
 	tracksDiv = "";
 	for(trackidx = 0; trackidx < trackCount; trackidx++){
-		tracksDiv += '<div class="row"><label>'+trackQuery[trackidx]+'</label></div>'
+		tracksDiv += '<div class="row"><label>'+shorten(trackQuery[trackidx], 25)+'</label></div>'
 	}
 	artistName = Amarok.Collection.query('SELECT name FROM artists WHERE id = '+artistId+';');
 	response = new HandlerResponse();
     div = loadFile("/www/collectionAllArtistTracks.html");
-	div = div.replace("###artist###", artistName);
+	div = div.replace("###artist###", shorten(artistName, 18));
 	div = div.replace("###trackcount###", trackCount);
 	div = div.replace(/###artistid###/g, artistId.toString());
 	div = div.replace("###tracks###", tracksDiv);	
