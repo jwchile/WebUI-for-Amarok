@@ -3,7 +3,7 @@
 * Basic authentication (RFC2617) [Done, digest auth?]
 * Play/Pause/Stop button images [Done]
 * Modify navigation in collection browsing for large collections.
-* Make UI more intuitive and appealing
+* Make UI more intuitive and appealing (e.g. make controls accessible from every view)
 * "Push" notifications (http://en.wikipedia.org/wiki/Push_technology#Long_polling).
 * Configuration UI.
 
