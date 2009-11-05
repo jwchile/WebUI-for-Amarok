@@ -51,6 +51,8 @@ http.registerHandler("/ajax/stop", stop);
 http.registerHandler("/ajax/incVolume", incVolume);
 http.registerHandler("/ajax/decVolume", decVolume);
 http.registerHandler("/ajax/addAlbumToPlaylist", addAlbumToPlaylist);
-http.registerHandler("/ajax/addAllTracksFromArtistToPlaylist", addAllTracksFromArtistToPlaylist); 
+http.registerHandler("/ajax/replacePlaylistWithAlbum", replacePlaylistWithAlbum);
+http.registerHandler("/ajax/addAllTracksFromArtistToPlaylist", addAllTracksFromArtistToPlaylist);
+http.registerHandler("/ajax/replacePlaylistWithAllArtistTrack", replacePlaylistWithAllArtistTrack);
 http.registerHandler("/ajax/clearPlaylist", clearPlaylist);
 

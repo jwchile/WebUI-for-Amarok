@@ -69,11 +69,21 @@ addAlbumToPlaylist = function(path){
 	return new HandlerResponse();
 }
 
+replacePlaylistWithAlbum = function(path){
+	clearPlaylist(path);
+	addAlbumToPlaylist(path);
+}
+
 addAllTracksFromArtistToPlaylist = function(path){
 	artistId = parseInt(path.substring(path.lastIndexOf("/") + 1));
 	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.artist = ' + artistId + ';')
 	addTracksToPlaylist(tracksQuery);
 	return new HandlerResponse();
+}
+
+replacePlaylistWithAllArtistTrack = function(path){
+	clearPlaylist(path);
+	addAllTracksFromArtistToPlaylist(path);
 }
 
 clearPlaylist = function(path){

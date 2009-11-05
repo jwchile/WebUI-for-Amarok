@@ -6,4 +6,4 @@
 * Make UI more intuitive and appealing
 * "Push" notifications (http://en.wikipedia.org/wiki/Push_technology#Long_polling).
 * Configuration UI.
-* Fix "replace current playlist with album" bug.
+

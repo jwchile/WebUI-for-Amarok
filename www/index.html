@@ -74,9 +74,9 @@
         req.send("");
 	}
 	function replacePlaylistWithAlbum(albumid){
-		clearPlaylist();
-		//FIXME: Why is addAl... only getting through from time to time?
-		addAlbumToPlaylist(albumid);		
+		req = new XMLHttpRequest();
+        req.open("GET", "/ajax/replacePlaylistWithAlbum/"+albumid, true);
+        req.send("");
 	}
 	function addAllArtistTracksToPlaylist(artistid){
 		req = new XMLHttpRequest();
@@ -84,8 +84,9 @@
         req.send("");
 	}
 	function replacePlaylistWithAllArtistTrack(artistid){
-		clearPlaylist();
-		addAllArtistTracksToPlaylist(artistid);
+		req = new XMLHttpRequest();
+        req.open("GET", "/ajax/replacePlaylistWithAllArtistTrack/"+artistid, true);
+        req.send("");
 	}
   </script>
 </head>
