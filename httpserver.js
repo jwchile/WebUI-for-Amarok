@@ -69,8 +69,15 @@ HTTPServer.prototype.handlePendingRequests = function(){
     while(this.requestQueue.length > 0){
         r = this.requestQueue[0];
         Amarok.debug("Pending: Handling request (left: "+this.requestQueue.length+"): "+r[1].path());
-		//FIXME: check for infinite loops (e.g. when handle requests always throws an exception -> trial counter?)
-        this.handleRequest(r[0], r[1]);
+		try {
+			this.handleRequest(r[0], r[1]);
+		} 
+		catch (e) {
+			Amarok.debug("Error while handling request [" + r[1] + "]: " + e.toString());
+		}
+        //Remove request from queue, even when an exception occurred. This mechanism
+		//should only retry to process a request whose handling got interrupted by
+		//Amarok, not the requests whose handling failed with an exception.
         this.requestQueue.shift();
         Amarok.debug("Handled request (left: "+this.requestQueue.length+")");
     }
@@ -143,12 +150,7 @@ HTTPServer.prototype.handleRequest = function(socket, header){
 		handler = this.getRequestHandler(path);
 		if (handler != null) {
 			var handlerResponse;
-			try {
-				handlerResponse = handler(path);
-			} 
-			catch (e) {
-				Amarok.debug("Error while handling request [" + path + "]: " + e.toString());
-			}
+			handlerResponse = handler(path);
 			responseHeader = new QHttpResponseHeader(handlerResponse.retCode, handlerResponse.reasonPhrase, 1, 1);
 			/*if(!handlerResponse.content instanceof QByteArray)
 		 		Amarok.alert("Content"+handlerResponse.content.toString());*/
