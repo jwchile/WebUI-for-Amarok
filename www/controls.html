@@ -1,0 +1,18 @@
+<form id="controls" class="dialog" action="/index.thml" selected="true">
+	<fieldset>
+		<h1>Controls</h1>
+		<a class="button leftButton" type="cancel" onclick="alert(currentPage);">Close</a>    
+		<div style="text-align:center; margin-top:15px;">
+			<img src="/btn-prev.png" style="display:inline" onClick="prevTrack();setTimeout(reloadCurrentTrack, 1000);"/>
+			<img src="/btn-play.png" style="display:inline" onClick="play();setTimeout(reloadCurrentTrack, 1000);"/>
+			<img src="/btn-pause.png" style="display:inline" onClick="pause();setTimeout(reloadCurrentTrack, 1000);"/>
+			<img src="/btn-stop.png" style="display:inline" onClick="stop();setTimeout(reloadCurrentTrack, 1000);"/>
+			<img src="/btn-next.png" style="display:inline" onClick="nextTrack();setTimeout(reloadCurrentTrack, 1000);"/>
+		</div>
+		<div style="text-align:center">
+			<img src="/btn-minus.png" style="display:inline" onClick="decVolume();"/>
+			<img src="/btn-reload.png" onClick="reloadCurrentTrack();" />
+			<img src="/btn-plus.png" style="display:inline" onClick="incVolume();"/>
+		</div>
+	</fieldset>
+</form>

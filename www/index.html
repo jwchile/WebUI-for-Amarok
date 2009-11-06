@@ -21,8 +21,10 @@
                 if (req.readyState == 4) {
                     if (req.status == 200) {
                         document.getElementById(target).innerHTML = req.responseText;
+						//window.iui.replaceElementWithSource(target, req.responseText);
                     } else {
                         document.getElementById(target).innerHTML=" Error:\n"+ req.status + "\n" +req.statusText;
+						//window.iui.replaceElementWithSource(target, " Error:\n"+ req.status + "\n" +req.statusText);
                     }
                 }
             }
@@ -95,6 +97,7 @@
     <div class="toolbar">
         <h1 id="pageTitle"></h1>
         <a id="backButton" class="button" href="#"></a>
+		<a class="button" href="/ajax/controls">Controls</a>
     </div>
     <ul id="home" title="Amarok WebUI" selected="true">
        <li><a href="/ajax/currentTrackDiv">Current Track</a></li>

@@ -30,6 +30,16 @@ prevTrack = function(path){
     return new HandlerResponse();
 }
 
+play = function(path){
+    Amarok.Engine.Play();
+    return new HandlerResponse();
+}
+
+pause = function(path){
+    Amarok.Engine.Pause();
+    return new HandlerResponse();
+}
+
 playPause = function(path){
     if(Amarok.Engine.engineState() == 0)
         Amarok.Engine.Pause();

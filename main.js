@@ -35,6 +35,7 @@ ENGINE_STATE_PAUSE = 1
  */
 http = new HTTPServer();
 http.setDefaultHandler(fileHandler);
+http.registerHandler("/ajax/controls", controlsDlg);
 http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
 http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
 http.registerHandler("/ajax/playlistDiv", playlistDiv);
@@ -47,6 +48,8 @@ http.registerHandler("/ajax/albumCover", albumCover);
 http.registerHandler("/ajax/nextTrack", nextTrack);
 http.registerHandler("/ajax/prevTrack", prevTrack);
 http.registerHandler("/ajax/playPause", playPause);
+http.registerHandler("/ajax/play", play);
+http.registerHandler("/ajax/pause", pause);
 http.registerHandler("/ajax/stop", stop);
 http.registerHandler("/ajax/incVolume", incVolume);
 http.registerHandler("/ajax/decVolume", decVolume);

@@ -64,11 +64,26 @@ albumCover = function(path){
 }
 
 /**
+ * Show dialog with controls: play, pause, stop, 
+ * next/prev track, ind/dec volume, reload.
+ */
+controlsDlg = function(path){
+	response = new HandlerResponse();
+	engineState = Amarok.Engine.engineState();
+	div = loadFile("/www/controls.html");
+	/*if(Amarok.Engine.engineState() == ENGINE_STATE_PLAY)
+        div = div.replace("###playpause###", "pause");
+    else
+        div = div.replace("###playpause###", "play");*/
+    response.append(div);
+	return response;
+}
+
+/**
  *  Send div with info about the track currently playing.
  */
 currentTrackDiv = function(path){
     response = new HandlerResponse();    
-    engineState = Amarok.Engine.engineState();
     div = loadFile("/www/currentTrack.html");
     if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
         div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
@@ -90,10 +105,6 @@ currentTrackDiv = function(path){
         div = div.replace("###seconds###", "");
         div = div.replace("###coverimg###", "");
     }
-    if(Amarok.Engine.engineState() == 0)/*currently playing*/
-        div = div.replace("###playpause###", "pause");
-    else
-        div = div.replace("###playpause###", "play");
     response.append(div);
     return response;
 }
