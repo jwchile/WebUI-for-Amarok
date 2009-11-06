@@ -47,6 +47,16 @@
         req.open("GET", "/ajax/playPause", true);
         req.send("");
     }
+	function play(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/play", true);
+        req.send("");
+    }
+	function pause(){
+        req = new XMLHttpRequest();
+        req.open("GET", "/ajax/pause", true);
+        req.send("");
+    }
     function stop(){
         req = new XMLHttpRequest();
         req.open("GET", "/ajax/stop", true);

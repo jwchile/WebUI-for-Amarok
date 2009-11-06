@@ -28,7 +28,7 @@ currentTrackCover = function(path){
     response.setMimeType("image/png");
     engineState = Amarok.Engine.engineState();
     if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
-        response.append(pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 300));
+        response.append(pixmapToPNG(Amarok.Engine.currentTrack().imagePixmap(), 165));
     }
     return response;
 }
@@ -85,6 +85,7 @@ controlsDlg = function(path){
 currentTrackDiv = function(path){
     response = new HandlerResponse();    
     div = loadFile("/www/currentTrack.html");
+	engineState = Amarok.Engine.engineState();
     if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
         div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
         div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
