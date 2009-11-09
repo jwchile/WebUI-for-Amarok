@@ -1,6 +1,7 @@
 0.35 2009-11-9
     * Moved controls from the current-track-view to a modal dlg
       which is accessible from _every_ view.
+    * Icon for the springboard/home screen on the iPhone.
     * Smaller cover image in current-track-view.
     * Minor bugfixes.
 0.3 2009-11-5
