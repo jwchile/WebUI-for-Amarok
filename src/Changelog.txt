@@ -1,6 +1,8 @@
-0.4 2009-11-6
+0.35 2009-11-9
     * Moved controls from the current-track-view to a modal dlg
-      which is accessible from every view.
+      which is accessible from _every_ view.
+    * Smaller cover image in current-track-view.
+    * Minor bugfixes.
 0.3 2009-11-5
     * Improved collection browsing:
 	Track list from an album
