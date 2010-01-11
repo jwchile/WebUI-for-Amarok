@@ -22,6 +22,14 @@ Importer.include("util.js");
 Importer.include("conf.js");
 
 function HTTPServer(){
+	if(typeof RESTRICT_ACCESS_TO_SUBNET != "undefined"){
+		this.checkIPAddress = true;
+		try{
+			this.validSubnet = QHostAddress.parseSubnet(RESTRICT_ACCESS_TO_SUBNET);
+		}catch( error ){
+			Amarok.alert("Invalid subnet!");
+		}
+	}
     QTcpServer.call(this, null);
     this.listen(new QHostAddress(QHostAddress.Any), PORT);
     if(!this.isListening()){
@@ -35,34 +43,37 @@ function HTTPServer(){
 }
 
 HTTPServer.prototype = new QTcpServer();
-
 HTTPServer.prototype.requestQueue = new Array();
 
 HTTPServer.prototype.newConnectionCallback = function(){
     var socket = this.nextPendingConnection();
-    var request = new QByteArray();
-    var thisHTTP = this;
-    socket.readyRead.connect( 
-        function() {
-            request.append(socket.readAll());
-            var endOfRequest =  request.indexOf("\r\n\r\n");
-            if( endOfRequest > 0 ){
-                try{
-                    var header = new QHttpRequestHeader(request.left(endOfRequest + 4).toString());
-                    thisHTTP.requestQueue.push(new Array(socket, header));
-                    request.clear();
-                    /*Sometimes the script/handling of a request get's interrupted by Amarok.*/
-                    /*Check if the request was handled successfully in 1000ms*/
-                    thisHTTP.pendingRequestHandlerTimer.start(100);
-                    /*Handle request*/
-                    thisHTTP.handlePendingRequests();
-                    /*thisHTTP.handleRequest(socket, header.path());*/
-                }catch( error ){
-                    Amarok.debug(error)
-                }
-            }
-        }
-    );
+	if (this.checkIPAddress && !socket.peerAddress().isInSubnet(this.validSubnet)) {
+		Amarok.debug("Request from unauthorized IP address: " + socket.peerAddress().toString());
+		socket.close();
+	}else {
+		var request = new QByteArray();
+		var thisHTTP = this;
+		socket.readyRead.connect(function(){
+			request.append(socket.readAll());
+			var endOfRequest = request.indexOf("\r\n\r\n");
+			if (endOfRequest > 0) {
+				try {
+					var header = new QHttpRequestHeader(request.left(endOfRequest + 4).toString());
+					thisHTTP.requestQueue.push(new Array(socket, header));
+					request.clear();
+					/*Sometimes the script/handling of a request get's interrupted by Amarok.*/
+					/*Check if the request was handled successfully in 1000ms*/
+					thisHTTP.pendingRequestHandlerTimer.start(100);
+					/*Handle request*/
+					thisHTTP.handlePendingRequests();
+				/*thisHTTP.handleRequest(socket, header.path());*/
+				} 
+				catch (error) {
+					Amarok.debug(error)
+				}
+			}
+		});
+	}
 }
 
 HTTPServer.prototype.handlePendingRequests = function(){
