@@ -74,7 +74,7 @@ addTracksToPlaylist = function(tracksQueryResult){
 
 addAlbumToPlaylist = function(path){
 	albumId = parseInt(path.substring(path.lastIndexOf("/") + 1));
-	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.album = ' + albumId + ';')
+	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.album = ' + albumId + ' ORDER BY tracknumber;')
 	addTracksToPlaylist(tracksQuery);
 	return new HandlerResponse();
 }
@@ -86,7 +86,7 @@ replacePlaylistWithAlbum = function(path){
 
 addAllTracksFromArtistToPlaylist = function(path){
 	artistId = parseInt(path.substring(path.lastIndexOf("/") + 1));
-	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.artist = ' + artistId + ';')
+	tracksQuery = Amarok.Collection.query('SELECT url FROM tracks WHERE tracks.artist = ' + artistId + ' ORDER BY tracknumber;')
 	addTracksToPlaylist(tracksQuery);
 	return new HandlerResponse();
 }
