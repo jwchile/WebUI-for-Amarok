@@ -97,7 +97,9 @@ currentTrackDiv = function(path){
             seconds = "0"+seconds
         div = div.replace("###minutes###", minutes);
         div = div.replace("###seconds###", seconds);
-        div = div.replace("###coverimg###", '<img src="/ajax/currentTrackCover?key='+(new Date()).getTime()+'"/>');
+        div = div.replace("###coverimg###",
+            Amarok.Engine.currentTrack().imageUrl == '' ? '' :
+              '<img src="/ajax/currentTrackCover?key='+(new Date()).getTime()+'"/>');
     }else{
         div = div.replace("###artist###", "None");
         div = div.replace("###title###", "None");
