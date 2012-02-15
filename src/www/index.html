@@ -75,6 +75,9 @@
     function reloadCurrentTrack(){
         fillDiv('/ajax/currentTrackDiv', 'currentTrack');
     }
+    function setRating(rating){
+        fillDiv('/ajax/ratingDiv/' + rating, 'rating');
+    }
 	function addAlbumToPlaylist(albumid){
 		req = new XMLHttpRequest();
         req.open("GET", "/ajax/addAlbumToPlaylist/"+albumid, true);

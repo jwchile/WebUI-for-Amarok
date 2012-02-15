@@ -295,6 +295,10 @@ body > .panel {
     text-align: right;
 }
 
+.row.evaluation {
+    min-height: 84px;
+}
+
 fieldset > .row:last-child {
     border-bottom: none !important;
 }

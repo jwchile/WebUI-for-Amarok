@@ -38,6 +38,7 @@ http.setDefaultHandler(fileHandler);
 http.registerHandler("/ajax/controls", controlsDlg);
 http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
 http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
+http.registerHandler("/ajax/ratingDiv", ratingDiv);
 http.registerHandler("/ajax/playlistDiv", playlistDiv);
 http.registerHandler("/ajax/playlistTrackCover", playlistTrackCover);
 http.registerHandler("/ajax/collectionDiv", collectionArtistsDiv);
