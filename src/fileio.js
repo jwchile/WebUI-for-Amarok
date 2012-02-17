@@ -46,7 +46,7 @@ fileHandler = function(path){
         if( pathFileInfo.completeSuffix() == "css" ){
             response.setMimeType("text/css");
         }else if( pathFileInfo.completeSuffix() == "js" ){
-            response.setMimeType("text/js");
+            response.setMimeType("text/javascript");
         }else if( pathFileInfo.completeSuffix() == "png" ){
             response.setMimeType("image/png");
         }else if( pathFileInfo.completeSuffix() == "gif" ){

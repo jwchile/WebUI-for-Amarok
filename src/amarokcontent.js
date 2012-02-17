@@ -87,6 +87,7 @@ currentTrackDiv = function(path){
     div = loadFile("/www/currentTrack.html");
 	engineState = Amarok.Engine.engineState();
     if(engineState == ENGINE_STATE_PAUSE || engineState == ENGINE_STATE_PLAY){
+        div = div.replace("###rating###", getRatingHtml());
         div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
         div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
         div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
@@ -97,8 +98,11 @@ currentTrackDiv = function(path){
             seconds = "0"+seconds
         div = div.replace("###minutes###", minutes);
         div = div.replace("###seconds###", seconds);
-        div = div.replace("###coverimg###", '<img src="/ajax/currentTrackCover?key='+(new Date()).getTime()+'"/>');
+        div = div.replace("###coverimg###",
+            Amarok.Engine.currentTrack().imageUrl == '' ? '' :
+              '<img src="/ajax/currentTrackCover?key='+(new Date()).getTime()+'"/>');
     }else{
+        div = div.replace("###rating###", "None");
         div = div.replace("###artist###", "None");
         div = div.replace("###title###", "None");
         div = div.replace("###album###", "None");
@@ -110,6 +114,35 @@ currentTrackDiv = function(path){
     return response;
 }
 
+function getRatingHtml() {
+  var rating = currentTrack().rating, result = '<div>'
+  for (var i=1; i <= 10; i++) {
+    var star = rating >= i ? 'star' : 'star_3'
+    // The Dolphin browser for android won't trigger an onclick event on an image
+    //result += '<img src="/' + star + '.png" onclick="setRating(' + i + ')" />'
+    result += '<span onclick="setRating(' + i + '); return false;">' +
+              '<img src="/' + star + '.png"  /></span>'
+    if (i == 5) result += "</div><div>"
+  }
+  return result + '</div>'
+}
+
+function currentTrack() {
+  return Amarok.Engine.currentTrack()
+}
+
+/**
+ *  Send div with info about the track currently playing.
+ */
+function ratingDiv(path){
+    var track = currentTrack(),
+        newRating = parseInt(path.substring(path.lastIndexOf("/")+1));
+    if (track.rating == newRating) newRating = 0
+    track.rating = newRating
+    response = new HandlerResponse();    
+    response.append(getRatingHtml());
+    return response;
+}
 /**
  *  Send div for the current playlist.
  */
