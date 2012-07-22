@@ -1,6 +1,7 @@
 /*
  *    Copyright (C) 2009 by Johannes Wolter <jw@inutil.org>
  *                          Ian Monroe <ian@monroe.nu>
+ *    Copyright (C) 2012 by Martin Hoeher <martin@rpdev.net>
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -47,4 +48,23 @@ pixmapToPNG = function(pixmap, width){
     pixmap.scaledToWidth(width, Qt.SmoothTransformation).save(buffer, "PNG");
     buffer.close();
     return data;
+}
+
+/*
+ * Shorthand: Select variant readConfig of Script class
+ * 
+ * this convenience function selects the variant overload of the readConfig
+ * method provided by the Amarok.Script interface. (Otherwise, when just
+ * using readConfig, the script terminates with an ambiguous overload
+ * exception).
+ */
+readConfigV = function(key, defValue) {
+  return Amarok.Script["readConfig(QString,QVariant)"]( key, defValue );
+}
+
+/*
+ * Same as above, but for writeConfig.
+ */
+writeConfigV = function( key, value ) {
+  Amarok.Script["writeConfig(QString,QVariant)"]( key, value );
 }

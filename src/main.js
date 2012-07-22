@@ -1,5 +1,6 @@
 /*
  *    Copyright (C) 2009 by Johannes Wolter <jw@inutil.org>    
+ *    Copyright (C) 2012 by Martin Hoeher <martin@rpdev.net>
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,45 +19,39 @@
 Importer.loadQtBinding("qt.core");
 Importer.loadQtBinding("qt.network");
 Importer.loadQtBinding("qt.gui");
-Importer.include("httpserver.js");
-Importer.include("util.js");
-Importer.include("fileio.js");
-Importer.include("amarokctrl.js");
-Importer.include("amarokcontent.js");
-Importer.include("conf.js");
+
 
 ENGINE_STATE_PLAY = 0
 ENGINE_STATE_PAUSE = 1
 
 
+function printStackTrace( ex )
+{
+    var err = "There was an error in the Amarok WebUI plugin!\n\n";
+
+    err += "Error: " + ex.toString() + "\n"
+    for ( var member in ex ) {
+      err += member + ":" + ex[ member ] + "\n";
+    }
+
+    Amarok.alert(err);
+}
 
 /*
- * Setup of the HTTP server and its request dispatcher.
+ * Create new WebUI "main" class. It will take care for everything...
  */
-http = new HTTPServer();
-http.setDefaultHandler(fileHandler);
-http.registerHandler("/ajax/controls", controlsDlg);
-http.registerHandler("/ajax/currentTrackCover", currentTrackCover);
-http.registerHandler("/ajax/currentTrackDiv", currentTrackDiv);
-http.registerHandler("/ajax/ratingDiv", ratingDiv);
-http.registerHandler("/ajax/playlistDiv", playlistDiv);
-http.registerHandler("/ajax/playlistTrackCover", playlistTrackCover);
-http.registerHandler("/ajax/collectionDiv", collectionArtistsDiv);
-http.registerHandler("/ajax/collectionAlbumDiv", collectionAlbumDiv);
-http.registerHandler("/ajax/collectionArtistAlbumsDiv", collectionArtistAlbumsDiv);
-http.registerHandler("/ajax/collectionAllArtistTracksDiv", collectionAllArtistTracksDiv);
-http.registerHandler("/ajax/albumCover", albumCover);
-http.registerHandler("/ajax/nextTrack", nextTrack);
-http.registerHandler("/ajax/prevTrack", prevTrack);
-http.registerHandler("/ajax/playPause", playPause);
-http.registerHandler("/ajax/play", play);
-http.registerHandler("/ajax/pause", pause);
-http.registerHandler("/ajax/stop", stop);
-http.registerHandler("/ajax/incVolume", incVolume);
-http.registerHandler("/ajax/decVolume", decVolume);
-http.registerHandler("/ajax/addAlbumToPlaylist", addAlbumToPlaylist);
-http.registerHandler("/ajax/replacePlaylistWithAlbum", replacePlaylistWithAlbum);
-http.registerHandler("/ajax/addAllTracksFromArtistToPlaylist", addAllTracksFromArtistToPlaylist);
-http.registerHandler("/ajax/replacePlaylistWithAllArtistTrack", replacePlaylistWithAllArtistTrack);
-http.registerHandler("/ajax/clearPlaylist", clearPlaylist);
+try {
+  Importer.include("httpserver.js");
+  Importer.include("util.js");
+  Importer.include("fileio.js");
+  Importer.include("amarokctrl.js");
+  Importer.include("amarokcontent.js");
+  Importer.include("amarokwebui.js");
+  Importer.include("configuration.js");
+
+  webuimain = new AmarokWebUI();
+} catch ( e ) {
+  printStackTrace( e );
+}
+
 

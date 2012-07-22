@@ -1,6 +1,7 @@
 /*
  *    Copyright (C) 2009 by Johannes Wolter <jw@inutil.org>
  *                          Ian Monroe <ian@monroe.nu>
+ *    Copyright (C) 2012 by Martin Hoeher <martin@rpdev.net>
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -19,27 +20,28 @@
 Importer.loadQtBinding("qt.core");
 Importer.loadQtBinding("qt.network");
 Importer.include("util.js");
-Importer.include("conf.js");
+Importer.include("configuration.js");
 
-function HTTPServer(){
-	if(typeof RESTRICT_ACCESS_TO_SUBNET != "undefined"){
+function HTTPServer( webui ){
+  this.webui = webui;
+	if(this.webui.configuration.restrictAccessToSubnet && this.webui.configuration.restrictAccessToSubnet.length > 0){
 		this.checkIPAddress = true;
 		try{
-			this.validSubnet = QHostAddress.parseSubnet(RESTRICT_ACCESS_TO_SUBNET);
+			this.validSubnet = QHostAddress.parseSubnet(this.webui.configuration.restrictAccessToSubnet);
 		}catch( error ){
 			Amarok.alert("Invalid subnet!");
 		}
 	}
-    QTcpServer.call(this, null);
-    this.listen(new QHostAddress(QHostAddress.Any), PORT);
-    if(!this.isListening()){
-        Amarok.alert("Unable to open on port "+PORT+" for the web server.");
-    }
-    Amarok.Window.Statusbar.longMessage("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
-    this.newConnection.connect(this, this.newConnectionCallback);
-    this.requestHandlerRegistry = new Object();
-    this.pendingRequestHandlerTimer = new QTimer();
-    this.pendingRequestHandlerTimer.timeout.connect(this, this.handlePendingRequests);
+  QTcpServer.call(this, null);
+  this.listen(new QHostAddress(QHostAddress.Any), this.webui.configuration.port);
+  if(!this.isListening()){
+      Amarok.alert("Unable to open on port "+this.webui.configuration.port+" for the web server.");
+  }
+  Amarok.Window.Statusbar.longMessage("<b>Successfully started WebUI!</b>  It can be accessed at port "+this.serverPort()+".");
+  this.newConnection.connect(this, this.newConnectionCallback);
+  this.requestHandlerRegistry = new Object();
+  this.pendingRequestHandlerTimer = new QTimer();
+  this.pendingRequestHandlerTimer.timeout.connect(this, this.handlePendingRequests);
 }
 
 HTTPServer.prototype = new QTcpServer();
@@ -137,14 +139,14 @@ HTTPServer.prototype.sendErrorMsg = function(socket, retCode, reasonPhrase, msg,
  * stored since scripts sometimes get interrupted; see requestQueue).
  */
 HTTPServer.prototype.checkAuth = function(socket, header){
-	if (BASIC_AUTH == true) {
+	if (this.webui.configuration.basicAuth) {
 		if (header.value("Authorization").match("^Basic") != "Basic") {
 			this.sendErrorMsg(socket, 401, "Authorization Required", "<h3>401 Error</h3>Authorization Required!", [["WWW-Authenticate", 'Basic realm="WebUI for Amarok"']]);
 			return false;
 			
 		}
 		else {
-			authStr = new QByteArray(USER + ":" + PASSWD).toBase64();
+			authStr = new QByteArray(this.webui.configuration.user + ":" + this.webui.configuration.passwd).toBase64();
 			authResponse = header.value("Authorization").substring(6);
 			if (authResponse != authStr) {
 				this.sendErrorMsg(socket, 401, "Authorization Required", "<h3>401 Error</h3>Authorization Required!", [["WWW-Authenticate", 'Basic realm="WebUI for Amarok"']]);
