@@ -91,7 +91,8 @@ currentTrackDiv = function(path){
         div = div.replace("###artist###", shorten(Amarok.Engine.currentTrack().artist, 18));
         div = div.replace("###title###", shorten(Amarok.Engine.currentTrack().title, 18));
         div = div.replace("###album###", shorten(Amarok.Engine.currentTrack().album, 18));
-        length = Amarok.Engine.currentTrack().length;
+				// convert to seconds
+        length = Amarok.Engine.currentTrack().length/1000;
         minutes = Math.floor(length/60);
         seconds = length-(minutes*60);
         if(seconds.toString().length == 1)
