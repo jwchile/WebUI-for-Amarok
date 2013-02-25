@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: Helvetica;
-    background: #FFFFFF;
+    background: #f0f0f0;
     color: #000000;
     overflow-x: hidden;
     -webkit-user-select: none;
@@ -272,7 +272,6 @@ body > .panel {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     padding: 10px;
-    background: #c8c8c8 url(pinstripes.png);
 }
 
 .panel > fieldset {

@@ -65,10 +65,8 @@ decVolume = function(path){
 
 addTracksToPlaylist = function(tracksQueryResult){
 	for (trackIdx = 0; trackIdx < tracksQueryResult.length; trackIdx++) {
-		//FIXME: Why isn't query already returning a valid string?
-		url = new String(Amarok.Collection.query('SELECT rpath FROM urls WHERE id = ' + tracksQueryResult[trackIdx] + ';'));
-		//FIXME: this does not seem right
-		Amarok.Playlist.addMedia(new QUrl('file://' + url.substring(1)));
+		url = Amarok.Collection.query('SELECT rpath , lastmountpoint FROM urls JOIN devices ON urls.deviceid = devices.id WHERE urls.id = ' + tracksQueryResult[trackIdx] + ';');
+		Amarok.Playlist.addMedia(new QUrl('file://'+ url[1] + url[0].substring(1)));
 	}
 }
 
