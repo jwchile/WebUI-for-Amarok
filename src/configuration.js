@@ -30,6 +30,16 @@ function Configuration(webui) {
   this.restoreDefaultSettings();
 }
 
+
+/*
+ * Returns the configuration volume step
+ */
+getVolumeStep = function(){
+	var volumeStep = 5;
+	return readConfigV( "volumeStep", volumeStep );
+}
+
+
 /*
  * Saves the configuration
  */
@@ -90,6 +100,9 @@ Configuration.prototype.configure = function() {
     printStackTrace( ex );
   }
 }
+
+
+
 
 /*
  * Constructs the configuration dialog UI

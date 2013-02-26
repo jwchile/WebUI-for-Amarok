@@ -54,12 +54,12 @@ stop = function(path){
 }
 
 incVolume = function(path){
-    Amarok.Engine.IncreaseVolume(VOLUME_STEP);
+    Amarok.Engine.IncreaseVolume(getVolumeStep());
     return new HandlerResponse();
 }
 
 decVolume = function(path){
-    Amarok.Engine.DecreaseVolume(VOLUME_STEP);
+    Amarok.Engine.DecreaseVolume(getVolumeStep());
     return new HandlerResponse();
 }
 
