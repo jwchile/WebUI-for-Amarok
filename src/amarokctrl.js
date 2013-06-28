@@ -98,3 +98,27 @@ clearPlaylist = function(path){
 	Amarok.Playlist.clearPlaylist();
 	return new HandlerResponse();
 }
+
+getEngineState = function(){
+	return Amarok.Engine.engineState();
+}
+
+getVolume = function(){
+	return  Amarok.Engine.volume;
+}
+
+mute = function(){
+	Amarok.Engine.Mute();
+    return new HandlerResponse();
+}
+
+playByIndex = function(index) {
+	Amarok.Playlist.playByIndex(index);
+	return new HandlerResponse();
+}
+
+seek = function(position) {
+	Amarok.Engine.Seek(position);
+	return new HandlerResponse();
+}
+    

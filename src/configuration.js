@@ -16,6 +16,15 @@
  */
 
 /*
+ * Constants
+ */
+SERVERVERSION = 6;
+ENGINE_STATE_PLAY = 0;
+ENGINE_STATE_PAUSE = 1;
+CURRENT_COVER_WIDTH = 400
+
+
+/*
  * Creates a new Configuration object
  * 
  * This contructor is used to create a new configuration object. The sole

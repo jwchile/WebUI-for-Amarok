@@ -24,6 +24,7 @@ Importer.include("util.js");
 Importer.include("fileio.js");
 Importer.include("amarokctrl.js");
 Importer.include("amarokcontent.js");
+Importer.include("amarokapi.js");
 
 /*
  * Setup the Amarok Web UI
@@ -73,6 +74,30 @@ AmarokWebUI.prototype.startService = function() {
   this.http.registerHandler("/ajax/addAllTracksFromArtistToPlaylist", addAllTracksFromArtistToPlaylist);
   this.http.registerHandler("/ajax/replacePlaylistWithAllArtistTrack", replacePlaylistWithAllArtistTrack);
   this.http.registerHandler("/ajax/clearPlaylist", clearPlaylist);
+
+  this.http.registerHandler("/api/getServerVersion", getServerVersionJSON);
+  this.http.registerHandler("/api/getState", getStateJSON);
+  this.http.registerHandler("/api/getCurrentTrack", getCurrentTrackJSON);
+  this.http.registerHandler("/api/getPlaylistTrackCover", currentTrackCover);
+  this.http.registerHandler("/api/getPlaylist", getPlaylistJSON);
+  this.http.registerHandler("/api/cmd/clearPlaylist", cmdPlaylistClear);
+  this.http.registerHandler("/api/cmd/prev", cmdPrev);
+  this.http.registerHandler("/api/cmd/next", cmdNext);
+  this.http.registerHandler("/api/cmd/playPause", cmdPlayPause);
+  this.http.registerHandler("/api/cmd/playByIndex", cmdPlayByIndex);
+  this.http.registerHandler("/api/cmd/play", cmdPlay);
+  this.http.registerHandler("/api/cmd/pause", cmdPause);
+  this.http.registerHandler("/api/cmd/stop", cmdStop);
+  this.http.registerHandler("/api/cmd/increaseVolume", cmdVolumeUp);
+  this.http.registerHandler("/api/cmd/decreaseVolume", cmdVolumeDown);
+  this.http.registerHandler("/api/cmd/mute", cmdMute);
+  this.http.registerHandler("/api/cmd/seek", cmdSetPosition);
+  this.http.registerHandler("/api/cmd/addPlayMedia", cmdCollectionPlayByTrackId);
+  this.http.registerHandler("/api/cmd/addMedia", cmdCollectionEnqueue);
+  this.http.registerHandler("/api/getCollectionAllArtists", getCollectionAllArtistsJSON);
+  this.http.registerHandler("/api/getCollectionTracksByArtistId", getCollectionTracksByArtistIdJSON);
+  this.http.registerHandler("/api/getCollectionAlbumsByArtistId", getCollectionAlbumsByArtistIdJSON);
+  this.http.registerHandler("/api/getCollectionSearchAll", getCollectionSearchAllJSON);
 }
 
 /*

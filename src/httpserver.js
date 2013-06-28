@@ -181,11 +181,13 @@ HTTPServer.prototype.handleRequest = function(socket, header){
 	}
 }
 
-function HandlerResponse(){
+function HandlerResponse(isJson){
+	isJson = (typeof isJson == 'undefined' ? false : isJson);
+  
 	this.content = new QByteArray();
 	this.retCode = 200;
 	this.reasonPhrase = "OK";
-	this.mimeType = "text/html";
+	this.mimeType = (isJson?"application/json":"text/html");
 }
 
 HandlerResponse.prototype.setReturnCode = function(retCode, reasonPhrase){
