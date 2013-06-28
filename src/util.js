@@ -68,3 +68,7 @@ readConfigV = function(key, defValue) {
 writeConfigV = function( key, value ) {
   Amarok.Script["writeConfig(QString,QVariant)"]( key, value );
 }
+
+jsonEscape = function(str) {
+	return str.replace("\\", "\\\\").replace(/["]/g, '\\"');
+}

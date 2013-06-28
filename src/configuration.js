@@ -16,6 +16,15 @@
  */
 
 /*
+ * Constants
+ */
+SERVERVERSION = 6;
+ENGINE_STATE_PLAY = 0;
+ENGINE_STATE_PAUSE = 1;
+CURRENT_COVER_WIDTH = 400
+
+
+/*
  * Creates a new Configuration object
  * 
  * This contructor is used to create a new configuration object. The sole
@@ -29,6 +38,16 @@ function Configuration(webui) {
   this.dialog = null;
   this.restoreDefaultSettings();
 }
+
+
+/*
+ * Returns the configuration volume step
+ */
+getVolumeStep = function(){
+	var volumeStep = 5;
+	return readConfigV( "volumeStep", volumeStep );
+}
+
 
 /*
  * Saves the configuration
@@ -90,6 +109,9 @@ Configuration.prototype.configure = function() {
     printStackTrace( ex );
   }
 }
+
+
+
 
 /*
  * Constructs the configuration dialog UI

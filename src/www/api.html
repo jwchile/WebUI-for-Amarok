@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Amarok WebGUI API</title>
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="PRAGMA" content="NO-CACHE" /> 
+  <meta http-equiv="CACHE-CONTROL" content="NO-STORE, NO-CACHE, MUST-REVALIDATE, POST-CHECK=0, PRE-CHECK=0" /> 
+  <meta http-equiv="EXPIRES" content="01 Jan 1970 00:00:00 GMT" /> 
+  <meta http-equiv="Last-Modified" content="01 Jan 1970 00:00:00 GMT" /> 
+  <meta http-equiv="If-Modified-Since" content="01 Jan 1970 00:00:00 GMT" /> 
+  <style type="text/css" media="screen">@import "/iui/iui.css";</style>
+
+</head>
+
+<body>
+    <div class="toolbar">
+        <h1 id="">JSON API</h1>
+    </div>
+    <ul id="home" title="Amarok WebUI API" selected="true">
+		<li><a href="/api/getServerVersion">getServerVersionJSON</a></li>
+		<li><a href="/api/getState">getStateJSON</a></li>
+		<li><a href="/api/getCurrentTrack">getCurrentTrackJSON</a></li>
+		<li><a href="/api/getPlaylistTrackCover">currentTrackCover</a></li>
+		<li><a href="/api/getPlaylist">getPlaylistJSON</a></li>
+		<li><a href="/api/cmd/clearPlaylist">cmdPlaylistClear</a></li>
+		<li><a href="/api/cmd/prev">cmdPrev</a></li>
+		<li><a href="/api/cmd/next">cmdNext</a></li>
+		<li><a href="/api/cmd/playPause">cmdPlayPause</a></li>
+		<li><a href="/api/cmd/play">cmdPlay</a></li>
+		<li><a href="/api/cmd/pause">cmdPause</a></li>
+		<li><a href="/api/cmd/stop">cmdStop</a></li>
+		<li><a href="/api/cmd/increaseVolume">cmdVolumeUp</a></li>
+		<li><a href="/api/cmd/decreaseVolume">cmdVolumeDown</a></li>
+		<li><a href="/api/cmd/mute">cmdMute</a></li>
+		<li><a href="/api/cmd/playByIndex/3">cmdPlayByIndex</a></li>
+		<li><a href="/api/cmd/seek/15000">cmdSetPosition</a></li>
+		<li><a href="/api/cmd/addPlayMedia/123">cmdCollectionPlayByTrackId</a></li>
+		<li><a href="/api/cmd/addMedia/123/456/789">cmdCollectionEnqueue</a></li>
+		<li><a href="/api/getCollectionAllArtists">getCollectionAllArtistsJSON</a></li>
+		<li><a href="/api/getCollectionTracksByArtistId/123">getCollectionTracksByArtistIdJSON</a></li>
+		<li><a href="/api/getCollectionAlbumsByArtistId/123">getCollectionAlbumsByArtistIdJSON</a></li>
+		<li><a href="/api/getCollectionSearchAll/ROCK">getCollectionSearchAllJSON</a></li>
+    </ul>
+</body>
+
+</html>

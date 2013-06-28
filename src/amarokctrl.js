@@ -54,21 +54,19 @@ stop = function(path){
 }
 
 incVolume = function(path){
-    Amarok.Engine.IncreaseVolume(VOLUME_STEP);
+    Amarok.Engine.IncreaseVolume(getVolumeStep());
     return new HandlerResponse();
 }
 
 decVolume = function(path){
-    Amarok.Engine.DecreaseVolume(VOLUME_STEP);
+    Amarok.Engine.DecreaseVolume(getVolumeStep());
     return new HandlerResponse();
 }
 
 addTracksToPlaylist = function(tracksQueryResult){
 	for (trackIdx = 0; trackIdx < tracksQueryResult.length; trackIdx++) {
-		//FIXME: Why isn't query already returning a valid string?
-		url = new String(Amarok.Collection.query('SELECT rpath FROM urls WHERE id = ' + tracksQueryResult[trackIdx] + ';'));
-		//FIXME: this does not seem right
-		Amarok.Playlist.addMedia(new QUrl('file://' + url.substring(1)));
+		url = Amarok.Collection.query('SELECT rpath , lastmountpoint FROM urls JOIN devices ON urls.deviceid = devices.id WHERE urls.id = ' + tracksQueryResult[trackIdx] + ';');
+		Amarok.Playlist.addMedia(new QUrl('file://'+ url[1] + url[0].substring(1)));
 	}
 }
 
@@ -100,3 +98,27 @@ clearPlaylist = function(path){
 	Amarok.Playlist.clearPlaylist();
 	return new HandlerResponse();
 }
+
+getEngineState = function(){
+	return Amarok.Engine.engineState();
+}
+
+getVolume = function(){
+	return  Amarok.Engine.volume;
+}
+
+mute = function(){
+	Amarok.Engine.Mute();
+    return new HandlerResponse();
+}
+
+playByIndex = function(index) {
+	Amarok.Playlist.playByIndex(index);
+	return new HandlerResponse();
+}
+
+seek = function(position) {
+	Amarok.Engine.Seek(position);
+	return new HandlerResponse();
+}
+    

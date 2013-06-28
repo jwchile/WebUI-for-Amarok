@@ -46,6 +46,7 @@ try {
   Importer.include("fileio.js");
   Importer.include("amarokctrl.js");
   Importer.include("amarokcontent.js");
+  Importer.include("amarokapi.js");
   Importer.include("amarokwebui.js");
   Importer.include("configuration.js");
 
