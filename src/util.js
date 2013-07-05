@@ -26,27 +26,21 @@ QByteArray.prototype.toString = function(){
 }
 
 /**
- * Crop the string to size max and add "...".
- * @param {int} maximum length of the string
- */
-shorten = function(str, max){
-    if(str.length > max)
-        return str.substring(0,max-3)+"...";
-    else
-        return str
-}
-
-/**
  * 
  * @param {QPixmap} pixmap
- * @param {int} width
+ * @param {int} dimension
  */
-pixmapToPNG = function(pixmap, width){
+pixmapToPNG = function(pixmap, dimension){
     data = new QByteArray();
     buffer = new QBuffer(data);
     buffer.open(QIODevice.WriteOnly);
-    pixmap.scaledToWidth(width, Qt.SmoothTransformation).save(buffer, "PNG");
-    buffer.close();
+	if ( dimension != false ) {
+		pixmap.scaled(dimension, dimension, Qt.IgnoreAspectRatio, Qt.SmoothTransformation).save(buffer, "PNG");
+	}
+	else {
+		pixmap.save(buffer, "PNG");
+	}
+	buffer.close();
     return data;
 }
 

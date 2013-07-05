@@ -1,0 +1,87 @@
+#logo-amarok {
+	max-width: 100%;
+	display: block;
+	margin: 30px auto 0;
+}
+
+label {
+	display: block;
+    float: left;
+    font-weight: normal;
+    width: 5em;
+}
+
+.track-lyrics {
+	text-align: center;
+	white-space: pre-line;
+}
+
+.album-cover img {
+	max-width: 100%;
+	display: block;
+	margin: 30px auto;
+	border: 1px solid #2c3e50;
+}
+
+#playlist .ui-btn-active {
+	border: 0;
+}
+
+#collection-index .ui-btn-inner {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#control-buttons .btn-center { text-align: center; }
+#control-buttons a { padding-left: 20%; padding-right: 20%; } 
+
+#all-artist-tracks .ui-btn-inner,
+#album-tracks .ui-btn-inner {
+    left: -1px;
+    top: 1px;
+}
+
+#all-artist-tracks .ui-li-divider {
+	min-height: 67px;
+	padding-left: 100px;
+}
+
+#all-artist-tracks img.no-cover {
+	top: 5px;
+}
+
+.color0{background:transparent;}
+.color1{background:#16A085;}
+.color2{background:#F39C12;}
+.color3{background:#3498DB;}
+.color4{background:#9B59B6;}
+.color8{background:#E74C3C;}
+.color5{background:#34495E;}
+.color6{background:#F1C40F;}
+.color7{background:#2ECC71;}
+
+.ui-icon-amarok-play ,
+.ui-icon-amarok-pause, 
+.ui-icon-amarok-next ,
+.ui-icon-amarok-prev ,
+.ui-icon-amarok-volume-up ,
+.ui-icon-amarok-volume-down { background-image: url(../img/icons-18-white-amarok.png); }
+
+.ui-icon-amarok-prev { background-position: -1px -1px; }
+.ui-icon-amarok-pause { background-position: -37px -1px; }
+.ui-icon-amarok-play { background-position: -73px -1px; }
+.ui-icon-amarok-next { background-position: -108px -1px; }
+.ui-icon-amarok-volume-down { background-position: -144px -1px; }
+.ui-icon-amarok-volume-up { background-position: -180px -1px; }
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+	.ui-icon-amarok-play ,
+	.ui-icon-amarok-pause, 
+	.ui-icon-amarok-next ,
+	.ui-icon-amarok-prev ,
+	.ui-icon-amarok-volume-up ,
+	.ui-icon-amarok-volume-down { 
+		background-image: url(../img/icons-36-white-amarok.png); 
+		background-size: 198px 18px;
+	}
+}

@@ -220,10 +220,15 @@ cmdCollectionEnqueue = function(path) {
 			media = jsonEscape(media);
 			medias += '"'+media+'"';
 		}
+		else {
+			medias += 'null';
+		}
 		
 		tracksId += trackId;
-		if ( i + 1 < req_len )
+		if ( i + 1 < req_len ) {
+			medias += ',';
 			tracksId += ',';
+		}
     }
 
 	response = new HandlerResponse(true);
