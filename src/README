@@ -17,3 +17,10 @@ development on iPhone). For details:
 * www/iui/NOTICE.txt
 * www/iui/README.txt
 * http://code.google.com/p/iui
+
+Contributor: Mudar Noufal <mn@mudar.ca>
+- Added support for a JSON API.
+- Refactoring to replace iUI by jQuery Mobile.
+- Libraries used:
+http://jquerymobile.com/
+http://github.com/ququplay/jquery-mobile-flat-ui-theme

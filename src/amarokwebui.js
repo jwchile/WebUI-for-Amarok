@@ -75,6 +75,7 @@ AmarokWebUI.prototype.startService = function() {
   this.http.registerHandler("/ajax/replacePlaylistWithAllArtistTrack", replacePlaylistWithAllArtistTrack);
   this.http.registerHandler("/ajax/clearPlaylist", clearPlaylist);
 
+  this.http.registerHandler("/ajax/collectionIndex", collectionIndex);
   this.http.registerHandler("/api/getServerVersion", getServerVersionJSON);
   this.http.registerHandler("/api/getState", getStateJSON);
   this.http.registerHandler("/api/getCurrentTrack", getCurrentTrackJSON);
